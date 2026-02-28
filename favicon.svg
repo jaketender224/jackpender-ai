@@ -1,5 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="4" fill="#060215"/>
-  <text x="16" y="22" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="16" fill="#B026FF" style="filter:drop-shadow(0 0 3px #B026FF)">JP</text>
-  <rect x="2" y="28" width="28" height="2" rx="1" fill="#39FF14" opacity="0.7"/>
+  <rect width="32" height="32" rx="5" fill="#060215"/>
+  <!-- Red hair (messy, spiky) -->
+  <path d="M8 13 L8 9 Q8 4 13 3.5 L19 3.5 Q24 4 24 9 L24 13" fill="#E83A14"/>
+  <path d="M7 10 Q6 6 9 4" stroke="#E83A14" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M25 10 Q26 6 23 4" stroke="#E83A14" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <line x1="11" y1="3.5" x2="9" y2="1" stroke="#E83A14" stroke-width="2" stroke-linecap="round"/>
+  <line x1="16" y1="3" x2="16" y2="0.5" stroke="#E83A14" stroke-width="2" stroke-linecap="round"/>
+  <line x1="21" y1="3.5" x2="23" y2="1" stroke="#E83A14" stroke-width="2" stroke-linecap="round"/>
+  <!-- Face -->
+  <rect x="9" y="10" width="14" height="12" rx="3" fill="#FFDBB4"/>
+  <!-- Eyes -->
+  <circle cx="13" cy="15" r="2" fill="#060215"/>
+  <circle cx="19" cy="15" r="2" fill="#060215"/>
+  <circle cx="13.6" cy="14.3" r="0.7" fill="#fff"/>
+  <circle cx="19.6" cy="14.3" r="0.7" fill="#fff"/>
+  <!-- Grin -->
+  <path d="M13 19 Q16 22 19 19" stroke="#C47A50" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+  <!-- Neon purple glow bar -->
+  <rect x="3" y="27" width="26" height="2.5" rx="1.2" fill="#B026FF" opacity="0.75"/>
 </svg>

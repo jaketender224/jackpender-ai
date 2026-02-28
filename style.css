@@ -20,7 +20,7 @@
 
   /* Text */
   --text:       #D4C8FF;
-  --text-dim:   #8B80CC;
+  --text-dim:   #B0A6D9;
   --text-white: #FFFFFF;
 
   --font-pixel: 'Press Start 2P', monospace;
@@ -41,7 +41,7 @@ html, body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-body);
-  cursor: crosshair;
+  cursor: url('cursor.svg') 3 3, crosshair;
   -webkit-font-smoothing: antialiased;
 }
 
