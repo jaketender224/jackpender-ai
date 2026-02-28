@@ -114,6 +114,7 @@ const INTEL_FACTS = [
   "INTEL: Closed 3 of the largest deals in Clerk Chat history. The company's max deal size went from $160K to $240K ACV in the process. Ceilings aren't real until you test them.",
   "INTEL: Showed up to the office in an In-N-Out hat. VP walked in, said 'that's where you're headed if you don't start closing.' Proceeded to have his best quarter. Hat is retired. Results are not.",
   "INTEL: Graduated Magna Cum Laude from Salem State. Nobody arrives at college planning to sell AI messaging software to hospitals and logistics companies. The path is rarely the one you mapped out — show up, figure it out.",
+  "INTEL: Office alias: 'Jake Tender.' Legal name: Jack Pender. One is on the contracts. The other is on the group chat. Both close deals. Neither wears a tie.",
 ];
 
 // =========================================
@@ -294,17 +295,33 @@ setInterval(() => {
 }, 2800);
 
 // =========================================
-// CLICK TO SHOOT
+// CLICK TO SHOOT / DIRECT ASTEROID HIT
 // =========================================
 let canShoot = true;
+let arcadeActive = false;
 document.addEventListener('click', e => {
-  if (e.target.closest('button, a, input, textarea, label')) return;
-  if (!canShoot) return;
+  if (e.target.closest('button, a, input, textarea, label, canvas#arcade-canvas')) return;
+  if (!canShoot || arcadeActive) return;
   if (!hintHidden) {
     document.getElementById('shoot-hint').classList.add('hidden');
     hintHidden = true;
   }
-  bullets.push(new Bullet(e.clientX, e.clientY));
+  // Direct hit: clicking ON an asteroid destroys it immediately
+  const clicked = asteroids.find(a => {
+    if (!a.alive) return false;
+    const dx = e.clientX - a.x, dy = e.clientY - a.y;
+    return Math.sqrt(dx * dx + dy * dy) < a.size * 1.3;
+  });
+  if (clicked) {
+    clicked.alive = false;
+    explosions.push(new Explosion(clicked.x, clicked.y));
+    score++;
+    document.getElementById('score').textContent = score;
+    showIntel(INTEL_FACTS[factIndex++ % INTEL_FACTS.length]);
+    setTimeout(() => { clicked.spawn(true); clicked.alive = true; }, 1800);
+  } else {
+    bullets.push(new Bullet(e.clientX, e.clientY));
+  }
 });
 
 // =========================================
@@ -369,6 +386,8 @@ function updateMiniNav(target) {
 function navigateTo(target) {
   const current = document.querySelector('.screen.active');
   if (!current) return;
+  if (current.id === 'screen-arcade' && target !== 'arcade') arcEndGame('exit');
+  arcadeActive = (target === 'arcade');
   canShoot   = false;
   warpActive = true;
 
@@ -468,3 +487,350 @@ if (signalForm) {
     }
   });
 }
+
+// =========================================
+// ARCADE GAME
+// =========================================
+let arcCanvas, arcCtx, arcW, arcH;
+let arcState = 'idle';
+let arcShip, arcAsteroids, arcBullets, arcExplosions;
+let arcLives, arcHits, arcTimeLeft;
+let arcAnimFrame, arcTimerInterval, arcSpawnInterval;
+let arcMouseX = 0, arcMouseY = 0;
+let arcInvincible = false;
+
+class ArcAsteroid {
+  constructor() { this.alive = true; this.spawn(); }
+  spawn() {
+    const edge = Math.floor(Math.random() * 4);
+    if      (edge === 0) { this.x = Math.random() * arcW; this.y = -40; }
+    else if (edge === 1) { this.x = arcW + 40;            this.y = Math.random() * arcH; }
+    else if (edge === 2) { this.x = Math.random() * arcW; this.y = arcH + 40; }
+    else                 { this.x = -40;                   this.y = Math.random() * arcH; }
+    this.size = 16 + Math.random() * 22;
+    const dx = arcW / 2 - this.x + (Math.random() - 0.5) * 200;
+    const dy = arcH / 2 - this.y + (Math.random() - 0.5) * 200;
+    const d  = Math.sqrt(dx * dx + dy * dy) || 1;
+    const spd = 1.0 + Math.random() * 1.4;
+    this.vx = (dx / d) * spd;
+    this.vy = (dy / d) * spd;
+    this.rot = 0;
+    this.rotSpd = (Math.random() - 0.5) * 0.04;
+    const sides = 6 + Math.floor(Math.random() * 4);
+    this.verts = Array.from({ length: sides }, () => 0.6 + Math.random() * 0.7);
+    this.sides = sides;
+    this.pulse = Math.random() * Math.PI * 2;
+  }
+  update() {
+    this.x += this.vx; this.y += this.vy;
+    this.rot += this.rotSpd; this.pulse += 0.04;
+    if (this.x < -100 || this.x > arcW + 100 || this.y < -100 || this.y > arcH + 100) this.spawn();
+  }
+  draw() {
+    const p = 0.5 + 0.5 * Math.sin(this.pulse);
+    arcCtx.save();
+    arcCtx.translate(this.x, this.y);
+    arcCtx.rotate(this.rot);
+    arcCtx.beginPath();
+    for (let i = 0; i < this.sides; i++) {
+      const a = (i / this.sides) * Math.PI * 2;
+      const r = this.size * this.verts[i];
+      i === 0 ? arcCtx.moveTo(Math.cos(a) * r, Math.sin(a) * r)
+              : arcCtx.lineTo(Math.cos(a) * r, Math.sin(a) * r);
+    }
+    arcCtx.closePath();
+    arcCtx.shadowColor = `rgba(255,${100 + p * 80},0,1)`;
+    arcCtx.shadowBlur = 14 + p * 8;
+    arcCtx.strokeStyle = `rgba(255,${140 + p * 60},20,0.9)`;
+    arcCtx.lineWidth = 2;
+    arcCtx.stroke();
+    arcCtx.fillStyle = 'rgba(255,107,0,0.07)';
+    arcCtx.fill();
+    arcCtx.restore();
+  }
+  hit(px, py) {
+    const dx = px - this.x, dy = py - this.y;
+    return Math.sqrt(dx * dx + dy * dy) < this.size * 1.1;
+  }
+}
+
+class ArcBullet {
+  constructor(angle) {
+    this.x = arcShip.x; this.y = arcShip.y;
+    const spd = 14;
+    this.vx = Math.cos(angle) * spd;
+    this.vy = Math.sin(angle) * spd;
+    this.alive = true; this.life = 0;
+  }
+  update() {
+    this.x += this.vx; this.y += this.vy; this.life++;
+    if (this.life > 65 || this.x < -10 || this.x > arcW + 10 || this.y < -10 || this.y > arcH + 10) this.alive = false;
+  }
+  draw() {
+    arcCtx.save();
+    arcCtx.beginPath();
+    arcCtx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+    arcCtx.shadowColor = '#39FF14';
+    arcCtx.shadowBlur = 12;
+    arcCtx.fillStyle = '#39FF14';
+    arcCtx.fill();
+    arcCtx.beginPath();
+    arcCtx.moveTo(this.x, this.y);
+    arcCtx.lineTo(this.x - this.vx * 2.5, this.y - this.vy * 2.5);
+    arcCtx.strokeStyle = 'rgba(57,255,20,0.4)';
+    arcCtx.lineWidth = 1.5;
+    arcCtx.stroke();
+    arcCtx.restore();
+  }
+}
+
+class ArcExplosion {
+  constructor(x, y) {
+    this.x = x; this.y = y; this.life = 1.0;
+    const colors = ['255,184,0', '255,107,0', '255,45,120', '57,255,20'];
+    this.pts = Array.from({ length: 14 }, () => ({
+      angle: Math.random() * Math.PI * 2,
+      speed: 1 + Math.random() * 3.5,
+      size: 1 + Math.random() * 3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+    }));
+  }
+  update() { this.life -= 0.04; }
+  draw() {
+    const prog = 1 - this.life;
+    this.pts.forEach(p => {
+      const px = this.x + Math.cos(p.angle) * p.speed * prog * 28;
+      const py = this.y + Math.sin(p.angle) * p.speed * prog * 28;
+      arcCtx.beginPath();
+      arcCtx.arc(px, py, p.size * this.life, 0, Math.PI * 2);
+      arcCtx.shadowColor = `rgba(${p.color},1)`;
+      arcCtx.shadowBlur = 5;
+      arcCtx.fillStyle = `rgba(${p.color},${this.life})`;
+      arcCtx.fill();
+    });
+  }
+}
+
+function arcDrawShip() {
+  if (arcInvincible && Math.floor(Date.now() / 100) % 2 === 0) return;
+  const s = arcShip, size = 18;
+  arcCtx.save();
+  arcCtx.translate(s.x, s.y);
+  arcCtx.rotate(s.angle);
+  arcCtx.beginPath();
+  arcCtx.moveTo(size, 0);
+  arcCtx.lineTo(-size * 0.65, size * 0.45);
+  arcCtx.lineTo(-size * 0.35, 0);
+  arcCtx.lineTo(-size * 0.65, -size * 0.45);
+  arcCtx.closePath();
+  arcCtx.shadowColor = '#39FF14';
+  arcCtx.shadowBlur = 18;
+  arcCtx.strokeStyle = '#39FF14';
+  arcCtx.lineWidth = 1.5;
+  arcCtx.stroke();
+  arcCtx.fillStyle = 'rgba(57,255,20,0.1)';
+  arcCtx.fill();
+  arcCtx.restore();
+}
+
+function arcDrawCursor() {
+  const x = arcMouseX, y = arcMouseY, r = 9;
+  arcCtx.save();
+  arcCtx.strokeStyle = 'rgba(57,255,20,0.7)';
+  arcCtx.lineWidth = 1;
+  arcCtx.shadowColor = '#39FF14';
+  arcCtx.shadowBlur = 6;
+  arcCtx.beginPath();
+  arcCtx.moveTo(x - r, y); arcCtx.lineTo(x - 3, y);
+  arcCtx.moveTo(x + 3, y); arcCtx.lineTo(x + r, y);
+  arcCtx.moveTo(x, y - r); arcCtx.lineTo(x, y - 3);
+  arcCtx.moveTo(x, y + 3); arcCtx.lineTo(x, y + r);
+  arcCtx.stroke();
+  arcCtx.beginPath();
+  arcCtx.arc(x, y, 1.5, 0, Math.PI * 2);
+  arcCtx.fillStyle = '#39FF14';
+  arcCtx.fill();
+  arcCtx.restore();
+}
+
+function arcUpdateHUD() {
+  const hearts = arcLives > 0 ? '♥ '.repeat(arcLives).trim() : '☆';
+  document.getElementById('arcade-lives').textContent = hearts;
+  document.getElementById('arcade-timer-display').textContent = arcTimeLeft < 10 ? '0' + arcTimeLeft : '' + arcTimeLeft;
+  document.getElementById('arcade-hits-display').textContent = 'HITS: ' + arcHits;
+}
+
+function arcEndGame(result) {
+  clearInterval(arcTimerInterval);
+  clearInterval(arcSpawnInterval);
+  cancelAnimationFrame(arcAnimFrame);
+  arcState = result;
+
+  const screenEl = document.getElementById('screen-arcade');
+  if (screenEl) screenEl.classList.remove('playing');
+
+  const hudEl   = document.getElementById('arcade-hud');
+  const startEl = document.getElementById('arcade-start-overlay');
+  const winEl   = document.getElementById('arcade-win-overlay');
+  const deadEl  = document.getElementById('arcade-dead-overlay');
+  if (!startEl) return;
+
+  hudEl.classList.add('hidden');
+  startEl.classList.add('hidden');
+  winEl.classList.add('hidden');
+  deadEl.classList.add('hidden');
+
+  if (result === 'won')      winEl.classList.remove('hidden');
+  else if (result === 'dead') deadEl.classList.remove('hidden');
+  else                        startEl.classList.remove('hidden');
+}
+
+function arcStartGame() {
+  arcState = 'playing';
+  arcLives = 3;
+  arcHits = 0;
+  arcTimeLeft = 30;
+  arcInvincible = false;
+  arcShip = { x: arcW / 2, y: arcH / 2, angle: 0 };
+  arcAsteroids = Array.from({ length: 4 }, () => new ArcAsteroid());
+  arcBullets = [];
+  arcExplosions = [];
+
+  document.getElementById('arcade-start-overlay').classList.add('hidden');
+  document.getElementById('arcade-win-overlay').classList.add('hidden');
+  document.getElementById('arcade-dead-overlay').classList.add('hidden');
+  document.getElementById('arcade-hud').classList.remove('hidden');
+  document.getElementById('screen-arcade').classList.add('playing');
+
+  arcUpdateHUD();
+
+  clearInterval(arcTimerInterval);
+  arcTimerInterval = setInterval(() => {
+    arcTimeLeft--;
+    arcUpdateHUD();
+    if (arcTimeLeft <= 0) arcEndGame('won');
+  }, 1000);
+
+  clearInterval(arcSpawnInterval);
+  arcSpawnInterval = setInterval(() => {
+    if (arcState === 'playing' && arcAsteroids.filter(a => a.alive).length < 8) {
+      arcAsteroids.push(new ArcAsteroid());
+    }
+  }, 2200);
+
+  cancelAnimationFrame(arcAnimFrame);
+  arcGameLoop();
+}
+
+function arcGameLoop() {
+  arcCtx.clearRect(0, 0, arcW, arcH);
+  arcCtx.fillStyle = 'rgba(6,2,21,0.95)';
+  arcCtx.fillRect(0, 0, arcW, arcH);
+
+  if (arcState !== 'playing') return;
+
+  // Update ship aim
+  arcShip.angle = Math.atan2(arcMouseY - arcShip.y, arcMouseX - arcShip.x);
+
+  // Subtle aim line
+  arcCtx.save();
+  arcCtx.beginPath();
+  arcCtx.moveTo(arcShip.x, arcShip.y);
+  arcCtx.lineTo(arcMouseX, arcMouseY);
+  arcCtx.strokeStyle = 'rgba(57,255,20,0.08)';
+  arcCtx.lineWidth = 1;
+  arcCtx.setLineDash([5, 8]);
+  arcCtx.stroke();
+  arcCtx.setLineDash([]);
+  arcCtx.restore();
+
+  // Bullets
+  arcBullets = arcBullets.filter(b => b.alive);
+  arcBullets.forEach(b => {
+    b.update();
+    arcAsteroids.forEach(a => {
+      if (!a.alive || !b.alive) return;
+      if (a.hit(b.x, b.y)) {
+        a.alive = b.alive = false;
+        arcExplosions.push(new ArcExplosion(a.x, a.y));
+        arcHits++;
+        arcUpdateHUD();
+        setTimeout(() => { a.spawn(); a.alive = true; }, 1200);
+      }
+    });
+    b.draw();
+  });
+
+  // Asteroids
+  for (let i = 0; i < arcAsteroids.length; i++) {
+    const a = arcAsteroids[i];
+    if (!a.alive) continue;
+    a.update();
+    a.draw();
+    if (!arcInvincible) {
+      const dx = arcShip.x - a.x, dy = arcShip.y - a.y;
+      if (Math.sqrt(dx * dx + dy * dy) < a.size + 10) {
+        a.alive = false;
+        arcExplosions.push(new ArcExplosion(arcShip.x, arcShip.y));
+        arcLives--;
+        arcUpdateHUD();
+        arcInvincible = true;
+        const ref = a;
+        setTimeout(() => { ref.spawn(); ref.alive = true; arcInvincible = false; }, 2000);
+        if (arcLives <= 0) { arcEndGame('dead'); return; }
+      }
+    }
+  }
+
+  // Explosions
+  arcExplosions = arcExplosions.filter(e => e.life > 0);
+  arcExplosions.forEach(e => { e.update(); e.draw(); });
+
+  // Draw ship
+  arcDrawShip();
+
+  // Draw custom crosshair
+  arcDrawCursor();
+
+  arcAnimFrame = requestAnimationFrame(arcGameLoop);
+}
+
+// Initialize arcade
+function arcInit() {
+  arcCanvas = document.getElementById('arcade-canvas');
+  if (!arcCanvas) return;
+  arcCtx = arcCanvas.getContext('2d');
+
+  function arcResize() {
+    arcW = arcCanvas.width  = window.innerWidth;
+    arcH = arcCanvas.height = window.innerHeight;
+  }
+  arcResize();
+  window.addEventListener('resize', arcResize);
+
+  document.addEventListener('mousemove', e => {
+    arcMouseX = e.clientX;
+    arcMouseY = e.clientY;
+  });
+
+  arcCanvas.addEventListener('click', e => {
+    if (arcState !== 'playing') return;
+    arcBullets.push(new ArcBullet(arcShip.angle));
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === ' ' && arcState === 'playing') {
+      e.preventDefault();
+      arcBullets.push(new ArcBullet(arcShip.angle));
+    }
+  });
+
+  const startBtn = document.getElementById('arcade-start-btn');
+  const retryBtn = document.getElementById('arcade-retry-btn');
+  const againBtn = document.getElementById('arcade-play-again-btn');
+  if (startBtn) startBtn.addEventListener('click', arcStartGame);
+  if (retryBtn) retryBtn.addEventListener('click', arcStartGame);
+  if (againBtn) againBtn.addEventListener('click', arcStartGame);
+}
+
+arcInit();

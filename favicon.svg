@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="4" fill="#060215"/>
+  <text x="16" y="22" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="16" fill="#B026FF" style="filter:drop-shadow(0 0 3px #B026FF)">JP</text>
+  <rect x="2" y="28" width="28" height="2" rx="1" fill="#39FF14" opacity="0.7"/>
+</svg>

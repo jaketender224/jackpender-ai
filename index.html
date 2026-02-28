@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -53,6 +54,10 @@
     <button class="mnav-btn" data-target="contact" style="--c:#FF2D78">
       <div class="mnav-orb"></div>
       <span class="mnav-label">CONTACT</span>
+    </button>
+    <button class="mnav-btn" data-target="arcade" style="--c:#39FF14">
+      <div class="mnav-orb"></div>
+      <span class="mnav-label">ARCADE</span>
     </button>
   </nav>
 
@@ -100,6 +105,11 @@
         <button class="planet-btn" data-target="contact" style="--glow:#EC4899; --glow-rgb:236,72,153">
           <div class="planet-orb"></div>
           <span>MAKE CONTACT</span>
+        </button>
+
+        <button class="planet-btn" data-target="arcade" style="--glow:#39FF14; --glow-rgb:57,255,20">
+          <div class="planet-orb"></div>
+          <span>ARCADE</span>
         </button>
 
       </nav>
@@ -332,6 +342,52 @@
           </form>
         </div>
 
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== -->
+  <!--   ARCADE              -->
+  <!-- ===================== -->
+  <div id="screen-arcade" class="screen">
+    <canvas id="arcade-canvas"></canvas>
+
+    <!-- Game HUD (visible during play) -->
+    <div id="arcade-hud" class="arcade-hud hidden">
+      <div id="arcade-lives">♥ ♥ ♥</div>
+      <div id="arcade-timer-display">30</div>
+      <div id="arcade-hits-display">HITS: 0</div>
+    </div>
+
+    <!-- Start overlay -->
+    <div id="arcade-start-overlay" class="arcade-overlay">
+      <div class="arcade-overlay-inner">
+        <button class="back-btn" data-target="home">◄ RETURN TO GALAXY</button>
+        <h2 class="section-title" style="--glow:#39FF14">ARCADE</h2>
+        <p class="arcade-desc">MISSION: SURVIVE 30 SECONDS</p>
+        <p class="arcade-desc" style="opacity:0.7">Asteroids inbound from all sides.<br>Aim with cursor. Click to fire.<br>Don't get hit.</p>
+        <button id="arcade-start-btn" class="arcade-start-btn">▶ LAUNCH MISSION</button>
+      </div>
+    </div>
+
+    <!-- Win overlay -->
+    <div id="arcade-win-overlay" class="arcade-overlay hidden">
+      <div class="arcade-overlay-inner">
+        <h2 class="section-title" style="--glow:#39FF14">MISSION COMPLETE</h2>
+        <p class="arcade-desc">You survived. Now there's only one thing left to do.</p>
+        <a href="mailto:jack@jackpender.ai?subject=MISSION%20COMPLETE" class="arcade-win-link">★ CLAIM YOUR REWARD ★</a>
+        <p class="arcade-desc" style="font-size:8px !important; opacity:0.45">Email jack@jackpender.ai with subject: MISSION COMPLETE</p>
+        <button id="arcade-play-again-btn" class="arcade-secondary-btn">PLAY AGAIN</button>
+      </div>
+    </div>
+
+    <!-- Dead overlay -->
+    <div id="arcade-dead-overlay" class="arcade-overlay hidden">
+      <div class="arcade-overlay-inner">
+        <h2 class="section-title" style="--glow:#FF2D78">MISSION FAILED</h2>
+        <p class="arcade-desc">Direct hit. Ship destroyed.</p>
+        <button id="arcade-retry-btn" class="arcade-start-btn">▶ RETRY MISSION</button>
+        <button class="back-btn" data-target="home" style="margin-bottom:0">◄ RETURN TO GALAXY</button>
       </div>
     </div>
   </div>
