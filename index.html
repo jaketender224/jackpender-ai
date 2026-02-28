@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
-  <link rel="stylesheet" href="style.css?v=2" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=3" />
+  <link rel="stylesheet" href="style.css?v=3" />
 </head>
 <body>
 
@@ -71,6 +71,7 @@
   <!--   HOME SCREEN         -->
   <!-- ===================== -->
   <div id="screen-home" class="screen active">
+    <div class="home-scroll">
     <div class="home-inner">
       <p class="pre-title">[ INCOMING TRANSMISSION ]</p>
       <h1 class="main-title">JACK<br>PENDER</h1>
@@ -113,7 +114,47 @@
         </button>
 
       </nav>
+
+      <!-- Scroll hint arrow -->
+      <div class="scroll-hint" id="scroll-hint">
+        <span>▼</span>
+      </div>
     </div>
+
+    <!-- BELOW THE FOLD — revealed on scroll -->
+    <div class="home-below">
+      <div class="home-below-inner">
+
+        <div class="highlight-stats">
+          <div class="hl-stat">
+            <span class="hl-num" style="--accent:#FFB800">$820K</span>
+            <span class="hl-label">ARR Closed</span>
+          </div>
+          <div class="hl-stat">
+            <span class="hl-num" style="--accent:#39FF14">210%</span>
+            <span class="hl-label">Quota Attainment</span>
+          </div>
+          <div class="hl-stat">
+            <span class="hl-num" style="--accent:#00E5FF">80%</span>
+            <span class="hl-label">Win Rate</span>
+          </div>
+          <div class="hl-stat">
+            <span class="hl-num" style="--accent:#B026FF">&lt;2 yrs</span>
+            <span class="hl-label">SDR to Mid-Market AE</span>
+          </div>
+        </div>
+
+        <p class="home-blurb">SDR to closing the largest deals in company history — all before 24. I sell AI-powered messaging at <a href="https://clerk.chat" target="_blank" rel="noopener">Clerk Chat</a>, and I built the playbook from scratch.</p>
+
+        <div class="home-cta-row">
+          <button class="home-cta-btn" data-target="pilot" style="--accent:#B026FF">ABOUT ME →</button>
+          <button class="home-cta-btn" data-target="contact" style="--accent:#FF2D78">GET IN TOUCH →</button>
+        </div>
+
+      </div>
+    </div>
+
+    </div><!-- /home-scroll -->
   </div>
 
   <!-- ===================== -->
@@ -392,6 +433,6 @@
     </div>
   </div>
 
-  <script src="script.js?v=2"></script>
+  <script src="script.js?v=3"></script>
 </body>
 </html>

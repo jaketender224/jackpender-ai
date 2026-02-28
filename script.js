@@ -383,13 +383,19 @@ function updateMiniNav(target) {
   });
 }
 
-function navigateTo(target) {
+function navigateTo(target, pushHistory) {
   const current = document.querySelector('.screen.active');
   if (!current) return;
+  if (current.id === 'screen-' + target) return;
   if (current.id === 'screen-arcade' && target !== 'arcade') arcEndGame('exit');
   arcadeActive = (target === 'arcade');
   canShoot   = false;
   warpActive = true;
+
+  // Push browser history so back button works between sections
+  if (pushHistory !== false) {
+    history.pushState({ section: target }, '', '#' + target);
+  }
 
   setTimeout(() => {
     overlay.style.opacity    = '0.8';
@@ -403,6 +409,11 @@ function navigateTo(target) {
       next.classList.add('active');
       const scroll = next.querySelector('.section-scroll');
       if (scroll) scroll.scrollTop = 0;
+      // Reset home scroll position when returning to home
+      if (target === 'home') {
+        const hs = next.querySelector('.home-scroll');
+        if (hs) hs.scrollTop = 0;
+      }
     }
     overlay.style.opacity    = '0';
     overlay.style.transition = 'opacity 0.3s ease';
@@ -412,11 +423,38 @@ function navigateTo(target) {
   }, 480);
 }
 
+// Browser back/forward button support
+window.addEventListener('popstate', e => {
+  const target = (e.state && e.state.section) || 'home';
+  navigateTo(target, false);
+});
+
+// Load correct section if URL has a hash (e.g. #pilot)
+if (location.hash) {
+  const target = location.hash.slice(1);
+  if (document.getElementById('screen-' + target)) {
+    document.getElementById('screen-home').classList.remove('active');
+    document.getElementById('screen-' + target).classList.add('active');
+    updateMiniNav(target);
+    arcadeActive = (target === 'arcade');
+  }
+}
+
 // Wire up all nav buttons
 document.querySelectorAll('.planet-btn').forEach(b => b.addEventListener('click', () => navigateTo(b.dataset.target)));
 document.querySelectorAll('.back-btn').forEach(b => b.addEventListener('click', () => navigateTo(b.dataset.target)));
 document.querySelectorAll('.mnav-btn').forEach(b => b.addEventListener('click', () => navigateTo(b.dataset.target)));
+document.querySelectorAll('.home-cta-btn').forEach(b => b.addEventListener('click', () => navigateTo(b.dataset.target)));
 document.addEventListener('keydown', e => { if (e.key === 'Escape') navigateTo('home'); });
+
+// Fade scroll hint when user scrolls the home screen
+const homeScroll = document.querySelector('.home-scroll');
+const scrollHint = document.getElementById('scroll-hint');
+if (homeScroll && scrollHint) {
+  homeScroll.addEventListener('scroll', () => {
+    scrollHint.classList.toggle('faded', homeScroll.scrollTop > 40);
+  });
+}
 
 // =========================================
 // SHOOTING STAR CONTACT
