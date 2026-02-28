@@ -1,14 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- White backing ring — ensures visibility on any background -->
+  <circle cx="3" cy="3" r="4.5" fill="none" stroke="#ffffff" stroke-width="1.2"/>
   <!-- Aiming dot (hotspot at 3,3) -->
-  <circle cx="3" cy="3" r="3" fill="#00E5FF" opacity="0.3"/>
-  <circle cx="3" cy="3" r="1.2" fill="#ffffff"/>
-  <!-- Beam from tip to gun -->
-  <line x1="4" y1="4" x2="11" y2="14" stroke="#00E5FF" stroke-width="1.2" opacity="0.4" stroke-dasharray="2 2"/>
-  <!-- Gun body -->
-  <path d="M10 13 L16 11 L19 15 L17 19 L11 19Z" fill="#0d0525" stroke="#39FF14" stroke-width="1"/>
-  <!-- Handle -->
-  <path d="M13 19 L12 26 L16 26 L15 19" fill="#0d0525" stroke="#B026FF" stroke-width="0.8"/>
-  <!-- Energy core -->
-  <circle cx="14" cy="15.5" r="1.8" fill="#39FF14" opacity="0.45"/>
-  <circle cx="14" cy="15.5" r="0.8" fill="#39FF14"/>
+  <circle cx="3" cy="3" r="2.2" fill="#00E5FF"/>
+  <circle cx="3" cy="3" r="0.9" fill="#ffffff"/>
+  <!-- Beam — white outline then cyan fill -->
+  <line x1="6" y1="6" x2="12" y2="13" stroke="#ffffff" stroke-width="2.8"/>
+  <line x1="6" y1="6" x2="12" y2="13" stroke="#00E5FF" stroke-width="1.4"/>
+  <!-- Gun body — white outline for contrast on dark/light backgrounds -->
+  <path d="M11 12 L18 9 L22 14 L19 21 L11 21Z" fill="#060215" stroke="#ffffff" stroke-width="2.2"/>
+  <path d="M11 12 L18 9 L22 14 L19 21 L11 21Z" fill="#0a0225" stroke="#39FF14" stroke-width="1.2"/>
+  <!-- Barrel tip -->
+  <circle cx="22" cy="13" r="2.2" fill="#ffffff"/>
+  <circle cx="22" cy="13" r="1.3" fill="#00E5FF"/>
+  <!-- Handle — white outline -->
+  <path d="M13 21 L12 29 L18 29 L17 21" fill="#060215" stroke="#ffffff" stroke-width="2"/>
+  <path d="M13 21 L12 29 L18 29 L17 21" fill="#0a0225" stroke="#B026FF" stroke-width="1"/>
+  <!-- Energy core — white backing for visibility -->
+  <circle cx="15" cy="15.5" r="3" fill="#ffffff"/>
+  <circle cx="15" cy="15.5" r="2" fill="#39FF14"/>
+  <circle cx="15" cy="15.5" r="0.9" fill="#ffffff"/>
 </svg>

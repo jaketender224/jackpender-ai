@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=3" />
-  <link rel="stylesheet" href="style.css?v=3" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=4" />
+  <link rel="stylesheet" href="style.css?v=4" />
 </head>
 <body>
 
@@ -60,6 +60,13 @@
       <span class="mnav-label">ARCADE</span>
     </button>
   </nav>
+
+  <!-- FUN FACT POPUP (shows on card/timeline click) -->
+  <div id="fact-popup" class="hidden">
+    <div id="fact-popup-header">★ FUN FACT</div>
+    <div id="fact-popup-text"></div>
+    <button id="fact-popup-close">✕</button>
+  </div>
 
   <!-- INTEL POPUP (shows asteroid facts) -->
   <div id="intel-popup">
@@ -121,36 +128,12 @@
       </div>
     </div>
 
-    <!-- BELOW THE FOLD — revealed on scroll -->
+    <!-- BELOW THE FOLD — daily quote -->
     <div class="home-below">
-      <div class="home-below-inner">
-
-        <div class="highlight-stats">
-          <div class="hl-stat">
-            <span class="hl-num" style="--accent:#FFB800">$820K</span>
-            <span class="hl-label">ARR Closed</span>
-          </div>
-          <div class="hl-stat">
-            <span class="hl-num" style="--accent:#39FF14">210%</span>
-            <span class="hl-label">Quota Attainment</span>
-          </div>
-          <div class="hl-stat">
-            <span class="hl-num" style="--accent:#00E5FF">80%</span>
-            <span class="hl-label">Win Rate</span>
-          </div>
-          <div class="hl-stat">
-            <span class="hl-num" style="--accent:#B026FF">&lt;2 yrs</span>
-            <span class="hl-label">SDR to Mid-Market AE</span>
-          </div>
-        </div>
-
-        <p class="home-blurb">SDR to closing the largest deals in company history — all before 24. I sell AI-powered messaging at <a href="https://clerk.chat" target="_blank" rel="noopener">Clerk Chat</a>, and I built the playbook from scratch.</p>
-
-        <div class="home-cta-row">
-          <button class="home-cta-btn" data-target="pilot" style="--accent:#B026FF">ABOUT ME →</button>
-          <button class="home-cta-btn" data-target="contact" style="--accent:#FF2D78">GET IN TOUCH →</button>
-        </div>
-
+      <div class="home-quote-wrap">
+        <div class="home-quote-label">[ TRANSMISSION OF THE DAY ]</div>
+        <blockquote id="daily-quote-text" class="daily-quote"></blockquote>
+        <cite id="daily-quote-attr" class="daily-quote-attr"></cite>
       </div>
     </div>
 
@@ -180,23 +163,32 @@
         <p>But I'm also the guy who showed up in an In-N-Out hat and got roasted by my VP. Take that however you want.</p>
 
         <div class="stats-grid">
-          <div class="stat" style="--accent:#7C3AED">
+          <div class="stat" style="--accent:#7C3AED" data-fact="Fun fact: The word 'quota' comes from the Latin 'quota pars' — meaning 'how large a part.' Philosophers used it to divide the cosmos. Sales managers use it to divide Q4.">
             <span class="stat-num">$820K</span>
             <span class="stat-label">ARR Closed</span>
           </div>
-          <div class="stat" style="--accent:#7C3AED">
+          <div class="stat" style="--accent:#7C3AED" data-fact="Fun fact: 210% of quota puts you in the top 1% of sales reps nationally. The other 99% have strong opinions about the CRM being the problem.">
             <span class="stat-num">210%</span>
             <span class="stat-label">Quota Q4 2025</span>
           </div>
-          <div class="stat" style="--accent:#7C3AED">
+          <div class="stat" style="--accent:#7C3AED" data-fact="Fun fact: The average B2B sales win rate is 47%. An 80% win rate means something unusual is happening — either in the product, the process, or the person. Usually all three.">
             <span class="stat-num">80%</span>
             <span class="stat-label">Win Rate</span>
           </div>
-          <div class="stat" style="--accent:#7C3AED">
+          <div class="stat" style="--accent:#7C3AED" data-fact="Fun fact: The largest deal ever closed by a 23-year-old in recorded sales history is not a verified statistic. But it's a good sentence to end a bio with.">
             <span class="stat-num">#1</span>
             <span class="stat-label">Largest Deals in Co. History</span>
           </div>
         </div>
+
+        <footer class="section-footer">
+          <a href="https://www.linkedin.com/in/jack-pender-3a1b80247/" target="_blank" rel="noopener" class="footer-link">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            LinkedIn
+          </a>
+          <a href="mailto:jack@jackpender.ai" class="footer-link">jack@jackpender.ai</a>
+          <a href="https://calendly.com" target="_blank" rel="noopener" class="footer-link">Book a call ↗</a>
+        </footer>
 
       </div>
     </div>
@@ -214,7 +206,7 @@
 
         <div class="timeline" style="--line:#2563EB; --dot:#2563EB">
 
-          <div class="timeline-item">
+          <div class="timeline-item" data-fact="Fun fact: 'Mid-Market' is the part of the market where deals are big enough to need legal review but small enough that no one has heard of the company at dinner parties. It is the most interesting part.">
             <div class="tl-dot"></div>
             <div class="tl-body">
               <h3>Account Executive, Mid-Market · Clerk Chat</h3>
@@ -223,7 +215,7 @@
             </div>
           </div>
 
-          <div class="timeline-item">
+          <div class="timeline-item" data-fact="Fun fact: SMB stands for Small and Medium Business. No one has ever agreed on exactly where 'small' ends and 'medium' begins. This ambiguity has sustained entire sales conferences.">
             <div class="tl-dot"></div>
             <div class="tl-body">
               <h3>Account Executive, SMB · Clerk Chat</h3>
@@ -232,7 +224,7 @@
             </div>
           </div>
 
-          <div class="timeline-item">
+          <div class="timeline-item" data-fact="Fun fact: SDR stands for Sales Development Representative. It was invented so companies could have someone make all the cold calls without having to call them 'the person who makes all the cold calls.'">
             <div class="tl-dot"></div>
             <div class="tl-body">
               <h3>Sales Development Rep · Clerk Chat</h3>
@@ -241,7 +233,7 @@
             </div>
           </div>
 
-          <div class="timeline-item">
+          <div class="timeline-item" data-fact="Fun fact: Polar Beverages was founded in 1882 — sixteen years before Pepsi. They have been bubbling quietly in Worcester while everyone else fought the cola wars. The bear on their cans has seen things.">
             <div class="tl-dot"></div>
             <div class="tl-body">
               <h3>Marketing Intern · Polar Beverages</h3>
@@ -250,7 +242,7 @@
             </div>
           </div>
 
-          <div class="timeline-item">
+          <div class="timeline-item" data-fact="Fun fact: Salem State has been educating people since 1854. The Viking mascot was chosen in 1937. Norse warriors actually reached Massachusetts around 1000 AD — roughly 600 years before the Puritans, and somehow got less press coverage.">
             <div class="tl-dot"></div>
             <div class="tl-body">
               <h3>Salem State University</h3>
@@ -260,6 +252,15 @@
           </div>
 
         </div>
+
+        <footer class="section-footer">
+          <a href="https://www.linkedin.com/in/jack-pender-3a1b80247/" target="_blank" rel="noopener" class="footer-link">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            LinkedIn
+          </a>
+          <a href="mailto:jack@jackpender.ai" class="footer-link">jack@jackpender.ai</a>
+          <a href="https://calendly.com" target="_blank" rel="noopener" class="footer-link">Book a call ↗</a>
+        </footer>
 
       </div>
     </div>
@@ -289,6 +290,15 @@
 
         </div>
 
+        <footer class="section-footer">
+          <a href="https://www.linkedin.com/in/jack-pender-3a1b80247/" target="_blank" rel="noopener" class="footer-link">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            LinkedIn
+          </a>
+          <a href="mailto:jack@jackpender.ai" class="footer-link">jack@jackpender.ai</a>
+          <a href="https://calendly.com" target="_blank" rel="noopener" class="footer-link">Book a call ↗</a>
+        </footer>
+
       </div>
     </div>
   </div>
@@ -306,31 +316,40 @@
 
         <div class="archive-grid">
 
-          <div class="archive-card" style="--accent:#F59E0B">
+          <div class="archive-card" style="--accent:#F59E0B" data-fact="Fun fact: Most sales playbooks are written by people who haven't made a cold call in years. This one was written by someone actively in the trenches — at 22. The difference is noticeable.">
             <h3>Clerk Chat SDR Playbook</h3>
             <span class="archive-tag">Built · 2024</span>
             <p>Wrote the outbound messaging framework from scratch as a 22-year-old SDR. It became the foundation of Clerk Chat's early GTM strategy.</p>
           </div>
 
-          <div class="archive-card" style="--accent:#F59E0B">
+          <div class="archive-card" style="--accent:#F59E0B" data-fact="Fun fact: The word 'pitch' in business comes from 19th-century market vendors who would literally pitch (set up) tents to hawk their goods. The metaphor got cleaner. The anxiety stayed exactly the same.">
             <h3>Viking Business Pitch Competition</h3>
             <span class="archive-tag">1st Place · 2023</span>
             <p>Won Salem State's annual pitch competition. Also helped lead the marketing and sales campaign for the following year's competition.</p>
           </div>
 
-          <div class="archive-card" style="--accent:#F59E0B">
+          <div class="archive-card" style="--accent:#F59E0B" data-fact="Fun fact: Polar Beverages' polar bear mascot has been on their cans since 1882. He has witnessed the Spanish flu, two world wars, disco, the rise of hard seltzer, and every summer heatwave. He remains unbothered.">
             <h3>Polar Beverages</h3>
             <span class="archive-tag">Marketing · 2023</span>
             <p>First real taste of brand marketing — working directly with the Director on operations, campaigns, and day-to-day execution.</p>
           </div>
 
-          <div class="archive-card" style="--accent:#F59E0B">
+          <div class="archive-card" style="--accent:#F59E0B" data-fact="Fun fact: Formal peer mentoring was pioneered as a concept in 1987. Before that it was just called 'asking your friend what to do,' which was considered equally effective and significantly cheaper.">
             <h3>Salem State Peer Mentorship</h3>
             <span class="archive-tag">Mentor · 2023–2024</span>
             <p>Mentored incoming students through their first year. Turns out giving advice is something I don't hate.</p>
           </div>
 
         </div>
+
+        <footer class="section-footer">
+          <a href="https://www.linkedin.com/in/jack-pender-3a1b80247/" target="_blank" rel="noopener" class="footer-link">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            LinkedIn
+          </a>
+          <a href="mailto:jack@jackpender.ai" class="footer-link">jack@jackpender.ai</a>
+          <a href="https://calendly.com" target="_blank" rel="noopener" class="footer-link">Book a call ↗</a>
+        </footer>
 
       </div>
     </div>
@@ -383,6 +402,15 @@
           </form>
         </div>
 
+        <footer class="section-footer">
+          <a href="https://www.linkedin.com/in/jack-pender-3a1b80247/" target="_blank" rel="noopener" class="footer-link">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            LinkedIn
+          </a>
+          <a href="mailto:jack@jackpender.ai" class="footer-link">jack@jackpender.ai</a>
+          <a href="https://calendly.com" target="_blank" rel="noopener" class="footer-link">Book a call ↗</a>
+        </footer>
+
       </div>
     </div>
   </div>
@@ -406,7 +434,7 @@
         <button class="back-btn" data-target="home">◄ RETURN TO GALAXY</button>
         <h2 class="section-title" style="--glow:#39FF14">ARCADE</h2>
         <p class="arcade-desc">MISSION: SURVIVE 30 SECONDS</p>
-        <p class="arcade-desc" style="opacity:0.7">Asteroids inbound from all sides.<br>Aim with cursor. Click to fire.<br>Don't get hit.</p>
+        <p class="arcade-desc" style="opacity:0.7">Asteroids inbound from all sides.<br>WASD or arrow keys to move. Click or space to fire.<br>Don't get hit.</p>
         <button id="arcade-start-btn" class="arcade-start-btn">▶ LAUNCH MISSION</button>
       </div>
     </div>
@@ -433,6 +461,6 @@
     </div>
   </div>
 
-  <script src="script.js?v=3"></script>
+  <script src="script.js?v=4"></script>
 </body>
 </html>

@@ -279,12 +279,93 @@ class Explosion {
 // =========================================
 let popupTimer = null;
 function showIntel(text) {
+  if (arcadeActive) return; // No intel popups during arcade game
   const popup = document.getElementById('intel-popup');
   document.getElementById('intel-text').textContent = text;
   popup.classList.add('visible');
   clearTimeout(popupTimer);
   popupTimer = setTimeout(() => popup.classList.remove('visible'), 5200);
 }
+
+// =========================================
+// DAILY QUOTE
+// =========================================
+const DAILY_QUOTES = [
+  { text: "The best time to book a demo is whenever the prospect says they're too busy to talk about it.", attr: "— Field notes" },
+  { text: "Salem, Massachusetts: founded 1626, most famous for an event in 1692 that sales reps still use as a metaphor for bad quarters.", attr: "— Local history, abridged" },
+  { text: "AI will replace salespeople. AI has been about to replace salespeople for roughly five years now. The salespeople are still here.", attr: "— Ongoing situation" },
+  { text: "San Francisco: where everyone is disrupting an industry and also complaining about the rent.", attr: "— City motto, unofficial" },
+  { text: "The difference between a pitch and a conversation is who's doing most of the listening.", attr: "— Overheard in a pipeline review" },
+  { text: "Business school teaches you frameworks. The first cold call teaches you everything else.", attr: "— Week one, on the job" },
+  { text: "Nobody ever closed a deal by explaining their product more slowly.", attr: "— Discovery call debrief" },
+  { text: "The CRM will be updated. Eventually. After the deal closes.", attr: "— Universal sales truth" },
+  { text: "Magna Cum Laude is Latin for 'please hire me, I did the readings.'", attr: "— Translation, practical edition" },
+  { text: "Every startup has a messaging problem. That's not a complaint — it's a business model.", attr: "— Founder logic" },
+  { text: "Cold outreach: the art of introducing yourself to strangers and making it their idea to respond.", attr: "— Sequence notes" },
+  { text: "San Francisco's fog has a name — Karl. Boston's fog is just called Tuesday.", attr: "— West Coast vs. East Coast, summarized" },
+  { text: "A playbook is only as good as the person who wrote it. Ideally they wrote it from the trenches, not the sidelines.", attr: "— Q1 retro" },
+  { text: "Sales is the only profession where 'no' is the beginning of the conversation.", attr: "— Objection handling, page one" },
+  { text: "The best salespeople don't sell. They help people make decisions they were already thinking about.", attr: "— Close rates, explained" },
+  { text: "Quota is a number. Pipeline is a story. Closed revenue is the punchline.", attr: "— End of quarter" },
+  { text: "AI messaging doesn't replace human connection. It removes the part where you forget to follow up.", attr: "— Product positioning, honest version" },
+  { text: "Business pitch competitions: where you practice explaining your idea to people who could fund it, or at least give you a nice plaque.", attr: "— Competition debrief" },
+  { text: "In sales, 'I'll think about it' means one of three things. Experienced reps know which one.", attr: "— Call recording, timestamped" },
+  { text: "Disqualifying a deal takes courage. Chasing a bad deal takes stubbornness. Knowing the difference takes experience.", attr: "— Pipeline hygiene" },
+  { text: "The In-N-Out hat was a statement. The VP disagreed. The numbers disagreed with the VP.", attr: "— Chapter closed" },
+  { text: "Enterprise software demos run on three things: solid discovery, a well-timed follow-up, and WiFi that doesn't fail during screen share.", attr: "— Demo day checklist" },
+  { text: "Salem banned Ouija boards until 2001. Now it's the top place in America to buy one. Entrepreneurship comes in many forms.", attr: "— Local economy, rebounded" },
+  { text: "The average deal has more stages than a Broadway show and a shorter run time.", attr: "— Sales cycle analysis" },
+  { text: "Outbound strategy tip: the goal isn't to sound like a salesperson. The goal is to sound like someone worth talking to.", attr: "— Playbook, chapter one" },
+  { text: "From SDR to closing enterprise deals in under two years. The average is 3–4 years. The average is just a number.", attr: "— Performance review" },
+  { text: "You can tell a lot about someone's sales philosophy by how they react when a deal goes quiet.", attr: "— Ghost pipeline theory" },
+  { text: "An early-stage startup's GTM strategy is 40% research, 20% instinct, and 40% figuring it out after the first call.", attr: "— Go-to-market, real version" },
+  { text: "Most people don't buy because of the features. They buy because someone made them feel like they'd be missing out without it.", attr: "— Win/loss analysis" },
+  { text: "The Salem witch trials: a cautionary tale about what happens when you let fear drive decision-making. Still relevant in pipeline reviews.", attr: "— History, applied" },
+];
+
+function initDailyQuote() {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const dayOfYear = Math.floor((now - start) / 86400000);
+  const q = DAILY_QUOTES[dayOfYear % DAILY_QUOTES.length];
+  const textEl = document.getElementById('daily-quote-text');
+  const attrEl = document.getElementById('daily-quote-attr');
+  if (textEl) textEl.textContent = q.text;
+  if (attrEl) attrEl.textContent = q.attr;
+}
+initDailyQuote();
+
+// =========================================
+// FUN FACT POPUP
+// =========================================
+const factPopup    = document.getElementById('fact-popup');
+const factPopupTxt = document.getElementById('fact-popup-text');
+let factPopupTimer = null;
+
+function showFact(text) {
+  factPopupTxt.textContent = text;
+  factPopup.classList.remove('hidden');
+  // Trigger transition on next frame
+  requestAnimationFrame(() => factPopup.classList.add('visible'));
+  clearTimeout(factPopupTimer);
+  factPopupTimer = setTimeout(() => hideFact(), 7000);
+}
+
+function hideFact() {
+  factPopup.classList.remove('visible');
+  clearTimeout(factPopupTimer);
+  setTimeout(() => factPopup.classList.add('hidden'), 420);
+}
+
+document.getElementById('fact-popup-close').addEventListener('click', hideFact);
+
+document.querySelectorAll('[data-fact]').forEach(el => {
+  el.addEventListener('click', e => {
+    // Don't trigger if clicking a button/link inside the card
+    if (e.target.closest('button, a')) return;
+    showFact(el.dataset.fact);
+  });
+});
 
 // =========================================
 // SPAWN INITIAL ASTEROIDS
@@ -444,7 +525,6 @@ if (location.hash) {
 document.querySelectorAll('.planet-btn').forEach(b => b.addEventListener('click', () => navigateTo(b.dataset.target)));
 document.querySelectorAll('.back-btn').forEach(b => b.addEventListener('click', () => navigateTo(b.dataset.target)));
 document.querySelectorAll('.mnav-btn').forEach(b => b.addEventListener('click', () => navigateTo(b.dataset.target)));
-document.querySelectorAll('.home-cta-btn').forEach(b => b.addEventListener('click', () => navigateTo(b.dataset.target)));
 document.addEventListener('keydown', e => { if (e.key === 'Escape') navigateTo('home'); });
 
 // Fade scroll hint when user scrolls the home screen
@@ -536,6 +616,8 @@ let arcLives, arcHits, arcTimeLeft;
 let arcAnimFrame, arcTimerInterval, arcSpawnInterval;
 let arcMouseX = 0, arcMouseY = 0;
 let arcInvincible = false;
+let arcStarting  = false; // grace period at game start — no collision
+let arcKeys      = {};    // WASD / arrow key state
 
 class ArcAsteroid {
   constructor() { this.alive = true; this.spawn(); }
@@ -729,6 +811,9 @@ function arcStartGame() {
   arcHits = 0;
   arcTimeLeft = 30;
   arcInvincible = false;
+  arcStarting  = true;  // 2.5s grace period — ship can't be hit at start
+  arcKeys      = {};
+  setTimeout(() => { arcStarting = false; }, 2500);
   arcShip = { x: arcW / 2, y: arcH / 2, angle: 0 };
   arcAsteroids = Array.from({ length: 4 }, () => new ArcAsteroid());
   arcBullets = [];
@@ -766,6 +851,18 @@ function arcGameLoop() {
   arcCtx.fillRect(0, 0, arcW, arcH);
 
   if (arcState !== 'playing') return;
+
+  // Ship movement — WASD or arrow keys
+  const spd = 4;
+  if (arcKeys['ArrowUp']    || arcKeys['w'] || arcKeys['W']) arcShip.y -= spd;
+  if (arcKeys['ArrowDown']  || arcKeys['s'] || arcKeys['S']) arcShip.y += spd;
+  if (arcKeys['ArrowLeft']  || arcKeys['a'] || arcKeys['A']) arcShip.x -= spd;
+  if (arcKeys['ArrowRight'] || arcKeys['d'] || arcKeys['D']) arcShip.x += spd;
+  // Wrap at screen edges
+  if (arcShip.x < -24) arcShip.x = arcW + 24;
+  if (arcShip.x > arcW + 24) arcShip.x = -24;
+  if (arcShip.y < -24) arcShip.y = arcH + 24;
+  if (arcShip.y > arcH + 24) arcShip.y = -24;
 
   // Update ship aim
   arcShip.angle = Math.atan2(arcMouseY - arcShip.y, arcMouseX - arcShip.x);
@@ -805,7 +902,7 @@ function arcGameLoop() {
     if (!a.alive) continue;
     a.update();
     a.draw();
-    if (!arcInvincible) {
+    if (!arcInvincible && !arcStarting) {
       const dx = arcShip.x - a.x, dy = arcShip.y - a.y;
       if (Math.sqrt(dx * dx + dy * dy) < a.size + 10) {
         a.alive = false;
@@ -857,11 +954,18 @@ function arcInit() {
   });
 
   document.addEventListener('keydown', e => {
-    if (e.key === ' ' && arcState === 'playing') {
-      e.preventDefault();
-      arcBullets.push(new ArcBullet(arcShip.angle));
+    arcKeys[e.key] = true;
+    if (arcState === 'playing') {
+      // Prevent page scroll during gameplay
+      if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) {
+        e.preventDefault();
+      }
+      if (e.key === ' ') {
+        arcBullets.push(new ArcBullet(arcShip.angle));
+      }
     }
   });
+  document.addEventListener('keyup', e => { arcKeys[e.key] = false; });
 
   const startBtn = document.getElementById('arcade-start-btn');
   const retryBtn = document.getElementById('arcade-retry-btn');
