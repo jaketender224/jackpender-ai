@@ -1439,3 +1439,62 @@ html.custom-cursor body.cursor-hover #cursor-ring {
 .tl-body h3 {
   font-size: 17px;
 }
+
+/* =========================================
+   PHASE 4 — PULL QUOTE + GAP FIX
+   ========================================= */
+
+/* Reduce dead space below planet nav */
+.home-inner {
+  min-height: 85vh;
+}
+
+/* Pull quote — typographic callout in PILOT */
+.pull-quote {
+  text-align: center;
+  margin: 44px auto;
+  max-width: 560px;
+  position: relative;
+  padding: 0 24px 24px;
+}
+.pull-quote::before {
+  content: '"';
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 96px;
+  line-height: 0.5;
+  color: var(--accent);
+  opacity: 0.2;
+  margin-bottom: 20px;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+.pull-quote p {
+  font-family: var(--font-sans) !important;
+  font-size: clamp(19px, 2.5vw, 27px) !important;
+  font-weight: 600 !important;
+  color: var(--text-white) !important;
+  line-height: 1.45 !important;
+  letter-spacing: -0.01em !important;
+  margin: 0 !important;
+}
+
+/* =========================================
+   PHASE 7 — MOBILE NAV POLISH
+   ========================================= */
+@media (max-width: 640px) {
+  #mini-nav {
+    padding: 10px 12px;
+    bottom: 32px;
+    gap: 0;
+  }
+  .mnav-btn {
+    padding: 6px 10px;
+  }
+  .section-content {
+    padding-top: 72px;
+  }
+  .stats-grid {
+    gap: 10px;
+  }
+}

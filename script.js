@@ -1,6 +1,6 @@
 /* =========================================
    JACK PENDER · jackpender.ai
-   script.js — cinematic deep space v11
+   script.js — cinematic deep space v13
    ========================================= */
 
 // =========================================
@@ -105,9 +105,8 @@ function triggerSectionReveal(screenEl) {
 }
 
 // =========================================
-// STARS
+// STARS — 3-layer depth field (Phase 6)
 // =========================================
-const STAR_COUNT  = 240;
 const STAR_COLORS = [
   [255,255,255], // white
   [200,215,255], // blue-white
@@ -116,26 +115,44 @@ const STAR_COLORS = [
   [255,240,200], // warm white
 ];
 
+// Layer config: [0] far · [1] mid · [2] near
+const STAR_LAYERS = [
+  { count: 100, minSize:0.15, maxSize:0.6,  minSpd:0.008, maxSpd:0.035, minOp:0.07, maxOp:0.32 },
+  { count:  90, minSize:0.45, maxSize:1.05, minSpd:0.035, maxSpd:0.10,  minOp:0.18, maxOp:0.55 },
+  { count:  50, minSize:0.85, maxSize:1.75, minSpd:0.09,  maxSpd:0.20,  minOp:0.35, maxOp:0.82 },
+];
+
+// Parallax — smooth lerp of mouse position for layer offset
+let prlxX = 0, prlxY = 0, prlxTX = 0, prlxTY = 0;
+document.addEventListener('mousemove', e => {
+  prlxTX = (e.clientX / window.innerWidth  - 0.5) * 2;
+  prlxTY = (e.clientY / window.innerHeight - 0.5) * 2;
+}, { passive: true });
+
 let stars      = [];
 let warpActive = false;
 
-function makeStar() {
-  const col   = STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)];
+function makeStar(layer) {
+  const col = STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)];
+  const cfg = STAR_LAYERS[layer];
   const angle = Math.random() * Math.PI * 2;
-  const speed = 0.04 + Math.random() * 0.16;
+  const speed = cfg.minSpd + Math.random() * (cfg.maxSpd - cfg.minSpd);
   return {
     x:       Math.random() * W,
     y:       Math.random() * H,
     speed,
     vx:      Math.cos(angle) * speed,
     vy:      Math.sin(angle) * speed,
-    size:    0.3 + Math.random() * 1.4,
-    opacity: 0.15 + Math.random() * 0.7,
+    size:    cfg.minSize + Math.random() * (cfg.maxSize - cfg.minSize),
+    opacity: cfg.minOp   + Math.random() * (cfg.maxOp   - cfg.minOp),
     r: col[0], g: col[1], b: col[2],
+    layer,
   };
 }
 
-for (let i = 0; i < STAR_COUNT; i++) stars.push(makeStar());
+STAR_LAYERS.forEach((cfg, li) => {
+  for (let i = 0; i < cfg.count; i++) stars.push(makeStar(li));
+});
 
 function updateStars() {
   if (warpActive) {
@@ -160,17 +177,22 @@ function updateStars() {
 
 function drawStars() {
   stars.forEach(s => {
+    // Parallax offset — near layer moves most, far stays fixed
+    const offX = s.layer === 2 ? prlxX * 9 : s.layer === 1 ? prlxX * 3.5 : 0;
+    const offY = s.layer === 2 ? prlxY * 9 : s.layer === 1 ? prlxY * 3.5 : 0;
+    const sx = s.x + offX;
+    const sy = s.y + offY;
     if (warpActive) {
       const len = s.speed * 90;
       ctx.beginPath();
-      ctx.moveTo(s.x + len, s.y);
-      ctx.lineTo(s.x, s.y);
+      ctx.moveTo(sx + len, sy);
+      ctx.lineTo(sx, sy);
       ctx.strokeStyle = `rgba(${s.r},${s.g},${s.b},${s.opacity * 0.8})`;
       ctx.lineWidth   = s.size * 0.7;
       ctx.stroke();
     } else {
       ctx.beginPath();
-      ctx.arc(s.x, s.y, s.size * 0.55, 0, Math.PI * 2);
+      ctx.arc(sx, sy, s.size * 0.55, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(${s.r},${s.g},${s.b},${s.opacity})`;
       ctx.fill();
     }
@@ -190,9 +212,9 @@ const DAILY_QUOTES = [
   { text: "Nobody ever closed a deal by explaining their product more slowly.", attr: "— The hold music" },
   { text: "The CRM will be updated. Eventually. After the deal closes.", attr: "— Salesforce, waiting" },
   { text: "Magna Cum Laude is Latin for 'please hire me, I did the readings.'", attr: "— A Latin professor, disappointed but impressed" },
-  { text: "Every startup has a messaging problem. That's not a complaint — it's a business model.", attr: "— Clerk Chat, probably" },
+  { text: "Every startup has a messaging problem. That's not a complaint, it's a business model.", attr: "— Clerk Chat, probably" },
   { text: "Cold outreach: the art of introducing yourself to strangers and making it their idea to respond.", attr: "— Voicemail number 47 of 50" },
-  { text: "San Francisco's fog has a name — Karl. Boston's fog is just called Tuesday.", attr: "— Karl the Fog, personally" },
+  { text: "San Francisco's fog has a name: Karl. Boston's fog is just called Tuesday.", attr: "— Karl the Fog, personally" },
   { text: "The best process isn't the one someone handed down. It's the one you built because nothing else existed yet.", attr: "— A blank sales template" },
   { text: "Sales is the only profession where 'no' is the beginning of the conversation.", attr: "— An out-of-office reply" },
   { text: "The best salespeople don't sell. They help people make decisions they were already thinking about.", attr: "— Sun Tzu (misattributed, but it fits)" },
@@ -275,6 +297,9 @@ document.addEventListener('click', e => {
 // MAIN LOOP — cinematic starfield only
 // =========================================
 function loop() {
+  // Lerp parallax toward mouse target (smooth movement)
+  prlxX += (prlxTX - prlxX) * 0.04;
+  prlxY += (prlxTY - prlxY) * 0.04;
   ctx.clearRect(0, 0, W, H);
   updateStars();
   drawStars();
@@ -378,6 +403,28 @@ if (homeScroll && scrollHint) {
     scrollHint.classList.toggle('faded', homeScroll.scrollTop > 40);
   });
 }
+
+// =========================================
+// MOBILE SWIPE — right swipe goes home (Phase 7)
+// =========================================
+let _swX = 0, _swY = 0, _swT = 0;
+document.addEventListener('touchstart', e => {
+  _swX = e.touches[0].clientX;
+  _swY = e.touches[0].clientY;
+  _swT = Date.now();
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - _swX;
+  const dy = e.changedTouches[0].clientY - _swY;
+  const dt = Date.now() - _swT;
+  // Right swipe: mostly horizontal, > 72px, < 450ms
+  if (dx > 72 && Math.abs(dy) < 80 && dt < 450) {
+    const active = document.querySelector('.screen.active');
+    if (active && active.id !== 'screen-home' && active.id !== 'screen-arcade') {
+      navigateTo('home');
+    }
+  }
+}, { passive: true });
 
 // =========================================
 // SHOOTING STAR CONTACT
