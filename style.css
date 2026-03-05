@@ -1124,6 +1124,15 @@ body::after {
   text-align: center;
   width: 100%;
 }
+a.arcade-discount-link {
+  display: block;
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s;
+}
+a.arcade-discount-link:hover {
+  background: rgba(57,255,20,0.09);
+  border-color: rgba(57,255,20,0.6);
+}
 .discount-label {
   font-family: var(--font-pixel);
   font-size: 6px;
