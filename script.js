@@ -385,7 +385,15 @@ setInterval(() => {
 let canShoot = true;
 let arcadeActive = false;
 document.addEventListener('click', e => {
-  if (e.target.closest('button, a, input, textarea, label, canvas#arcade-canvas')) return;
+  if (e.target.closest('button, a, input, textarea, label')) return;
+
+  // ARCADE MODE: fire bullet toward click position
+  if (arcadeActive && arcState === 'playing' && arcShip) {
+    const angle = Math.atan2(e.clientY - arcShip.y, e.clientX - arcShip.x);
+    arcBullets.push(new ArcBullet(angle));
+    return;
+  }
+
   if (!canShoot || arcadeActive) return;
   if (!hintHidden) {
     document.getElementById('shoot-hint').classList.add('hidden');
@@ -699,7 +707,7 @@ class ArcAsteroid {
 class ArcBullet {
   constructor(angle) {
     this.x = arcShip.x; this.y = arcShip.y;
-    const spd = 14;
+    const spd = 18;
     this.vx = Math.cos(angle) * spd;
     this.vy = Math.sin(angle) * spd;
     this.alive = true; this.life = 0;
@@ -711,16 +719,16 @@ class ArcBullet {
   draw() {
     arcCtx.save();
     arcCtx.beginPath();
-    arcCtx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+    arcCtx.arc(this.x, this.y, 5, 0, Math.PI * 2);
     arcCtx.shadowColor = '#39FF14';
-    arcCtx.shadowBlur = 12;
+    arcCtx.shadowBlur = 18;
     arcCtx.fillStyle = '#39FF14';
     arcCtx.fill();
     arcCtx.beginPath();
     arcCtx.moveTo(this.x, this.y);
-    arcCtx.lineTo(this.x - this.vx * 2.5, this.y - this.vy * 2.5);
-    arcCtx.strokeStyle = 'rgba(57,255,20,0.4)';
-    arcCtx.lineWidth = 1.5;
+    arcCtx.lineTo(this.x - this.vx * 3, this.y - this.vy * 3);
+    arcCtx.strokeStyle = 'rgba(57,255,20,0.5)';
+    arcCtx.lineWidth = 2;
     arcCtx.stroke();
     arcCtx.restore();
   }
@@ -810,9 +818,11 @@ function arcEndGame(result) {
   const screenEl = document.getElementById('screen-arcade');
   if (screenEl) screenEl.classList.remove('playing');
 
-  // Restore global footer when game ends
+  // Restore global footer + mini-nav when game ends
   const gf = document.getElementById('global-footer');
   if (gf) gf.classList.remove('hidden');
+  const mn = document.getElementById('mini-nav');
+  if (mn) mn.classList.remove('hidden');
 
   const hudEl   = document.getElementById('arcade-hud');
   const startEl = document.getElementById('arcade-start-overlay');
@@ -840,9 +850,11 @@ function arcStartGame() {
   arcKeys      = {};
   setTimeout(() => { arcStarting = false; }, 5000);
 
-  // Hide global footer during gameplay
+  // Hide global footer + mini-nav during gameplay
   const gf = document.getElementById('global-footer');
   if (gf) gf.classList.add('hidden');
+  const mn = document.getElementById('mini-nav');
+  if (mn) mn.classList.add('hidden');
   arcShip = { x: arcW / 2, y: arcH / 2, angle: 0 };
   arcAsteroids = Array.from({ length: 4 }, () => new ArcAsteroid());
   arcBullets = [];
@@ -977,10 +989,7 @@ function arcInit() {
     arcMouseY = e.clientY;
   });
 
-  arcCanvas.addEventListener('click', e => {
-    if (arcState !== 'playing') return;
-    arcBullets.push(new ArcBullet(arcShip.angle));
-  });
+  // Shooting is handled by the document-level click listener above
 
   document.addEventListener('keydown', e => {
     arcKeys[e.key] = true;
