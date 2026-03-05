@@ -627,18 +627,33 @@ class ArcAsteroid {
   constructor() { this.alive = true; this.spawn(); }
   spawn() {
     const edge = Math.floor(Math.random() * 4);
-    if      (edge === 0) { this.x = Math.random() * arcW; this.y = -40; }
-    else if (edge === 1) { this.x = arcW + 40;            this.y = Math.random() * arcH; }
-    else if (edge === 2) { this.x = Math.random() * arcW; this.y = arcH + 40; }
-    else                 { this.x = -40;                   this.y = Math.random() * arcH; }
+    let tx, ty;
+    if (edge === 0) {
+      // From top → travels generally downward
+      this.x = Math.random() * arcW; this.y = -40;
+      tx = arcW * 0.1 + Math.random() * arcW * 0.8;
+      ty = arcH * 0.55 + Math.random() * arcH * 0.55;
+    } else if (edge === 1) {
+      // From right → travels generally leftward
+      this.x = arcW + 40; this.y = Math.random() * arcH;
+      tx = Math.random() * arcW * 0.5;
+      ty = arcH * 0.1 + Math.random() * arcH * 0.8;
+    } else if (edge === 2) {
+      // From bottom → travels generally upward
+      this.x = Math.random() * arcW; this.y = arcH + 40;
+      tx = arcW * 0.1 + Math.random() * arcW * 0.8;
+      ty = Math.random() * arcH * 0.45;
+    } else {
+      // From left → travels generally rightward
+      this.x = -40; this.y = Math.random() * arcH;
+      tx = arcW * 0.5 + Math.random() * arcW * 0.5;
+      ty = arcH * 0.1 + Math.random() * arcH * 0.8;
+    }
     this.size = 16 + Math.random() * 22;
-    // Aim at a random point spread across the middle 60% of the screen — not strictly center
-    const tx = arcW * 0.2 + Math.random() * arcW * 0.6;
-    const ty = arcH * 0.2 + Math.random() * arcH * 0.6;
     const dx = tx - this.x;
     const dy = ty - this.y;
     const d  = Math.sqrt(dx * dx + dy * dy) || 1;
-    const spd = 0.75 + Math.random() * 1.1;
+    const spd = 0.5 + Math.random() * 0.9;
     this.vx = (dx / d) * spd;
     this.vy = (dy / d) * spd;
     this.rot = 0;
@@ -781,8 +796,7 @@ function arcDrawCursor() {
 }
 
 function arcUpdateHUD() {
-  const hearts = arcLives > 0 ? '♥ '.repeat(arcLives).trim() : '☆';
-  document.getElementById('arcade-lives').textContent = hearts;
+  document.getElementById('arcade-lives').textContent = arcLives > 0 ? '♥ '.repeat(arcLives).trim() : '☆';
   document.getElementById('arcade-timer-display').textContent = arcTimeLeft < 10 ? '0' + arcTimeLeft : '' + arcTimeLeft;
   document.getElementById('arcade-hits-display').textContent = 'HITS: ' + arcHits;
 }
@@ -818,13 +832,13 @@ function arcEndGame(result) {
 
 function arcStartGame() {
   arcState = 'playing';
-  arcLives = 3;
+  arcLives = 5;
   arcHits = 0;
   arcTimeLeft = 30;
   arcInvincible = false;
-  arcStarting  = true;  // 3s grace period — ship can't be hit at start
+  arcStarting  = true;  // 5s grace period — ship can't be hit at start
   arcKeys      = {};
-  setTimeout(() => { arcStarting = false; }, 3000);
+  setTimeout(() => { arcStarting = false; }, 5000);
 
   // Hide global footer during gameplay
   const gf = document.getElementById('global-footer');
@@ -926,7 +940,7 @@ function arcGameLoop() {
         arcUpdateHUD();
         arcInvincible = true;
         const ref = a;
-        setTimeout(() => { ref.spawn(); ref.alive = true; arcInvincible = false; }, 2000);
+        setTimeout(() => { ref.spawn(); ref.alive = true; arcInvincible = false; }, 3000);
         if (arcLives <= 0) { arcEndGame('dead'); return; }
       }
     }

@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=5" />
-  <link rel="stylesheet" href="style.css?v=5" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=6" />
+  <link rel="stylesheet" href="style.css?v=6" />
 </head>
 <body>
 
@@ -435,7 +435,7 @@
         <button class="back-btn" data-target="home">◄ RETURN TO GALAXY</button>
         <h2 class="section-title" style="--glow:#39FF14">ARCADE</h2>
         <p class="arcade-desc">MISSION: SURVIVE 30 SECONDS</p>
-        <p class="arcade-desc" style="opacity:0.7">Asteroids inbound from all sides.<br>WASD or arrow keys to move. Click or space to fire.<br>Don't get hit.</p>
+        <p class="arcade-desc" style="opacity:0.7">Asteroids inbound from all sides.<br>WASD or arrow keys to move. Click or space to fire.<br>5 lives. 30 seconds. Don't get hit.</p>
         <button id="arcade-start-btn" class="arcade-start-btn">▶ LAUNCH MISSION</button>
       </div>
     </div>
@@ -444,9 +444,13 @@
     <div id="arcade-win-overlay" class="arcade-overlay hidden">
       <div class="arcade-overlay-inner">
         <h2 class="section-title" style="--glow:#39FF14">MISSION COMPLETE</h2>
-        <p class="arcade-desc">You survived. Now there's only one thing left to do.</p>
-        <a href="mailto:jack@jackpender.ai?subject=MISSION%20COMPLETE" class="arcade-win-link">★ CLAIM YOUR REWARD ★</a>
-        <p class="arcade-desc" style="font-size:8px !important; opacity:0.45">Email jack@jackpender.ai with subject: MISSION COMPLETE</p>
+        <p class="arcade-desc">You survived. Here's your reward.</p>
+        <div class="arcade-discount-box">
+          <div class="discount-label">5% OFF CLERK CHAT</div>
+          <div class="discount-code">MISSION5</div>
+          <div class="discount-note">Use code at clerkchat.com</div>
+        </div>
+        <a href="https://www.linkedin.com/in/jaketender5/" target="_blank" rel="noopener" class="arcade-win-link">★ SEND ME A MESSAGE ON LINKEDIN ★</a>
         <button id="arcade-play-again-btn" class="arcade-secondary-btn">PLAY AGAIN</button>
       </div>
     </div>
@@ -474,6 +478,6 @@
     <a href="https://calendly.com" target="_blank" rel="noopener" class="gfooter-link">Book a call ↗</a>
   </div>
 
-  <script src="script.js?v=5"></script>
+  <script src="script.js?v=6"></script>
 </body>
 </html>

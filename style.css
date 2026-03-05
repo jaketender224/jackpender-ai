@@ -1116,6 +1116,36 @@ body::after {
   box-shadow: 0 0 40px rgba(57,255,20,0.4);
 }
 
+/* Arcade win — discount code box */
+.arcade-discount-box {
+  background: rgba(57,255,20,0.04);
+  border: 1px solid rgba(57,255,20,0.3);
+  padding: 18px 32px;
+  text-align: center;
+  width: 100%;
+}
+.discount-label {
+  font-family: var(--font-pixel);
+  font-size: 6px;
+  color: var(--green);
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+  opacity: 0.7;
+}
+.discount-code {
+  font-family: var(--font-pixel);
+  font-size: 22px;
+  color: var(--amber);
+  text-shadow: 0 0 24px var(--amber);
+  letter-spacing: 6px;
+  margin-bottom: 8px;
+}
+.discount-note {
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+
 .arcade-secondary-btn {
   background: none;
   border: none;
