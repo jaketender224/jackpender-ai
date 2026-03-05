@@ -22,29 +22,6 @@ window.addEventListener('resize', () => {
 });
 
 // =========================================
-// NEBULAE (painted once per frame behind stars)
-// =========================================
-const NEBULAE = [
-  { cx: 0.18, cy: 0.25, r: 320, color: [128,0,255],  alpha: 0.06 },
-  { cx: 0.82, cy: 0.70, r: 280, color: [0,100,255],  alpha: 0.05 },
-  { cx: 0.50, cy: 0.50, r: 380, color: [0,180,255],  alpha: 0.03 },
-  { cx: 0.75, cy: 0.15, r: 200, color: [255,45,120], alpha: 0.04 },
-];
-
-function drawNebulae() {
-  NEBULAE.forEach(n => {
-    const grd = ctx.createRadialGradient(
-      n.cx * W, n.cy * H, 0,
-      n.cx * W, n.cy * H, n.r
-    );
-    grd.addColorStop(0, `rgba(${n.color[0]},${n.color[1]},${n.color[2]},${n.alpha})`);
-    grd.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = grd;
-    ctx.fillRect(0, 0, W, H);
-  });
-}
-
-// =========================================
 // STARS
 // =========================================
 const STAR_COUNT  = 240;
@@ -59,26 +36,43 @@ const STAR_COLORS = [
 let stars      = [];
 let warpActive = false;
 
-function makeStar(forceRight) {
-  const col = STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)];
+function makeStar() {
+  const col   = STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)];
+  const angle = Math.random() * Math.PI * 2;
+  const speed = 0.04 + Math.random() * 0.16;
   return {
-    x:       forceRight ? W + 6 : Math.random() * W,
+    x:       Math.random() * W,
     y:       Math.random() * H,
-    speed:   0.06 + Math.random() * 0.4,
-    size:    0.3 + Math.random() * 1.6,
-    opacity: 0.1 + Math.random() * 0.8,
+    speed,
+    vx:      Math.cos(angle) * speed,
+    vy:      Math.sin(angle) * speed,
+    size:    0.3 + Math.random() * 1.4,
+    opacity: 0.15 + Math.random() * 0.7,
     r: col[0], g: col[1], b: col[2],
   };
 }
 
-for (let i = 0; i < STAR_COUNT; i++) stars.push(makeStar(false));
+for (let i = 0; i < STAR_COUNT; i++) stars.push(makeStar());
 
 function updateStars() {
-  const spd = warpActive ? 38 : 1;
-  stars.forEach(s => {
-    s.x -= s.speed * spd;
-    if (s.x < -8) Object.assign(s, makeStar(true));
-  });
+  if (warpActive) {
+    // Warp: stream left at high speed
+    stars.forEach(s => {
+      s.x -= s.speed * 38;
+      if (s.x < -8) { s.x = W + 6; s.y = Math.random() * H; }
+    });
+  } else {
+    // Normal: gentle random drift
+    stars.forEach(s => {
+      s.x += s.vx;
+      s.y += s.vy;
+      // Wrap around all edges
+      if (s.x < -4)    s.x = W + 4;
+      if (s.x > W + 4) s.x = -4;
+      if (s.y < -4)    s.y = H + 4;
+      if (s.y > H + 4) s.y = -4;
+    });
+  }
 }
 
 function drawStars() {
@@ -99,197 +93,6 @@ function drawStars() {
     }
   });
 }
-
-// =========================================
-// INTEL FACTS — story-driven, educational
-// =========================================
-const INTEL_FACTS = [
-  "INTEL: 210% of quota in Q4. The real unlock? Cutting average sales cycle from 7.8 to 3.9 days while simultaneously closing bigger deals. Most AEs think you have to pick one. You don't — you just have to disqualify faster.",
-  "INTEL: Built Clerk Chat's early outbound motion at 22 with zero prior sales experience and no template to copy from. It stuck. Takeaway: the person with the fewest assumptions often builds the best process — they're not protecting how it's always been done.",
-  "INTEL: 80% win rate by Q4 2025. It started at 62%. The difference wasn't more effort — it was better disqualification. Stopped chasing deals that weren't ready. Sounds obvious. Most reps can't bring themselves to do it.",
-  "INTEL: Grew average deal size 510% in under a year — from $2.1K to $12.8K ACV. The lesson: your average deal size is a ceiling you set for yourself. Most salespeople anchor to what they've already closed, not what's actually possible.",
-  "INTEL: Closed a $330K deal before his 23rd birthday. His parents still can't explain what he does at dinner parties. He's made peace with this.",
-  "INTEL: SDR to Mid-Market AE in under 2 years. The average is 3–4 years. Moving fast in sales isn't about skipping stages — it's about compressing them. Treat every stage like a test you're trying to ace early.",
-  "INTEL: Won the Salem State business pitch competition in 2023. Turns out selling judges on a startup idea uses the exact same muscle as selling a VP on enterprise software. Different stakes, same fundamentals.",
-  "INTEL: $1.3M ARR closed at Clerk Chat — AI-powered voice and messaging for businesses that need to actually reach people. Started at zero. 3 of the largest deals in company history along the way.",
-  "INTEL: Showed up to the office in an In-N-Out hat. VP walked in, said 'that's where you're headed if you don't start closing.' Proceeded to have his best quarter. Hat is retired. Results are not.",
-  "INTEL: Graduated Magna Cum Laude from Salem State. Nobody arrives at college planning to sell AI voice and messaging software to hospitals and logistics companies. The path is rarely the one you mapped out — show up, figure it out.",
-  "INTEL: Office alias: 'Jake Tender.' Legal name: Jack Pender. One is on the contracts. The other is on the group chat. Both close deals. Neither wears a tie.",
-];
-
-// =========================================
-// ASTEROIDS
-// =========================================
-let asteroids  = [];
-let bullets    = [];
-let explosions = [];
-let score      = 0;
-let factIndex  = 0;
-let hintHidden = false;
-
-class Asteroid {
-  constructor(offscreen) {
-    this.alive = true;
-    this.spawn(offscreen);
-  }
-
-  spawn(offscreen) {
-    if (offscreen) {
-      const e = Math.floor(Math.random() * 3);
-      if      (e === 0) { this.x = W + 70;               this.y = Math.random() * H; }
-      else if (e === 1) { this.x = Math.random() * W;    this.y = -70; }
-      else              { this.x = Math.random() * W;    this.y = H + 70; }
-    } else {
-      this.x = 80 + Math.random() * (W - 160);
-      this.y = 80 + Math.random() * (H - 160);
-    }
-    this.size     = 20 + Math.random() * 30;
-    this.vx       = -0.35 - Math.random() * 1.3;
-    this.vy       = (Math.random() - 0.5) * 0.9;
-    this.rot      = 0;
-    this.rotSpd   = (Math.random() - 0.5) * 0.022;
-    const sides   = 7 + Math.floor(Math.random() * 4);
-    this.verts    = Array.from({ length: sides }, () => 0.6 + Math.random() * 0.7);
-    this.sides    = sides;
-    this.glowPulse = Math.random() * Math.PI * 2;
-  }
-
-  update() {
-    this.x        += this.vx;
-    this.y        += this.vy;
-    this.rot      += this.rotSpd;
-    this.glowPulse += 0.03;
-    if (this.x < -90 || this.y < -90 || this.y > H + 90) this.spawn(true);
-  }
-
-  draw() {
-    const pulse = 0.5 + 0.5 * Math.sin(this.glowPulse);
-    ctx.save();
-    ctx.translate(this.x, this.y);
-    ctx.rotate(this.rot);
-
-    ctx.beginPath();
-    for (let i = 0; i < this.sides; i++) {
-      const angle = (i / this.sides) * Math.PI * 2;
-      const r     = this.size * this.verts[i];
-      i === 0
-        ? ctx.moveTo(Math.cos(angle) * r, Math.sin(angle) * r)
-        : ctx.lineTo(Math.cos(angle) * r, Math.sin(angle) * r);
-    }
-    ctx.closePath();
-
-    ctx.shadowColor = `rgba(255,${100 + pulse * 80},0,1)`;
-    ctx.shadowBlur  = 12 + pulse * 8;
-    ctx.strokeStyle = `rgba(255,${140 + pulse * 60},20,0.85)`;
-    ctx.lineWidth   = 1.5;
-    ctx.stroke();
-    ctx.shadowBlur  = 0;
-    ctx.fillStyle   = 'rgba(255,107,0,0.06)';
-    ctx.fill();
-    ctx.restore();
-  }
-
-  hit(px, py) {
-    const dx = px - this.x, dy = py - this.y;
-    return Math.sqrt(dx * dx + dy * dy) < this.size;
-  }
-}
-
-// =========================================
-// BULLETS
-// =========================================
-class Bullet {
-  constructor(tx, ty) {
-    this.x = W / 2;
-    this.y = H / 2;
-    const dx  = tx - this.x, dy = ty - this.y;
-    const d   = Math.sqrt(dx * dx + dy * dy) || 1;
-    const spd = 15;
-    this.vx   = (dx / d) * spd;
-    this.vy   = (dy / d) * spd;
-    this.alive = true;
-    this.life  = 0;
-  }
-
-  update() {
-    this.x += this.vx;
-    this.y += this.vy;
-    this.life++;
-    if (this.life > 85 || this.x < -10 || this.x > W + 10 || this.y < -10 || this.y > H + 10) {
-      this.alive = false;
-    }
-  }
-
-  draw() {
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
-    ctx.shadowColor = '#00E5FF';
-    ctx.shadowBlur  = 14;
-    ctx.fillStyle   = '#00E5FF';
-    ctx.fill();
-
-    // Trail
-    ctx.beginPath();
-    ctx.moveTo(this.x, this.y);
-    ctx.lineTo(this.x - this.vx * 3, this.y - this.vy * 3);
-    ctx.strokeStyle = 'rgba(0,229,255,0.4)';
-    ctx.lineWidth   = 1.5;
-    ctx.stroke();
-    ctx.restore();
-  }
-}
-
-// =========================================
-// EXPLOSIONS
-// =========================================
-class Explosion {
-  constructor(x, y) {
-    this.x    = x;
-    this.y    = y;
-    this.life = 1.0;
-    const colors = ['255,184,0', '255,107,0', '255,45,120', '0,229,255'];
-    this.pts = Array.from({ length: 18 }, () => ({
-      angle: Math.random() * Math.PI * 2,
-      speed: 1 + Math.random() * 4,
-      size:  1 + Math.random() * 3,
-      color: colors[Math.floor(Math.random() * colors.length)],
-    }));
-  }
-
-  update() { this.life -= 0.032; }
-
-  draw() {
-    const prog = 1 - this.life;
-    this.pts.forEach(p => {
-      const px = this.x + Math.cos(p.angle) * p.speed * prog * 30;
-      const py = this.y + Math.sin(p.angle) * p.speed * prog * 30;
-      ctx.beginPath();
-      ctx.arc(px, py, p.size * this.life, 0, Math.PI * 2);
-      ctx.shadowColor = `rgba(${p.color},1)`;
-      ctx.shadowBlur  = 6;
-      ctx.fillStyle   = `rgba(${p.color},${this.life})`;
-      ctx.fill();
-    });
-  }
-}
-
-// =========================================
-// INTEL POPUP
-// =========================================
-let popupTimer = null;
-function showIntel(text) {
-  if (arcadeActive) return; // No intel popups during arcade game
-  const popup = document.getElementById('intel-popup');
-  document.getElementById('intel-text').textContent = text;
-  popup.classList.add('visible');
-  clearTimeout(popupTimer);
-  popupTimer = setTimeout(() => popup.classList.remove('visible'), 6000);
-}
-document.getElementById('intel-popup-close').addEventListener('click', () => {
-  clearTimeout(popupTimer);
-  document.getElementById('intel-popup').classList.remove('visible');
-});
 
 // =========================================
 // DAILY QUOTE
@@ -372,87 +175,26 @@ document.querySelectorAll('[data-fact]').forEach(el => {
 });
 
 // =========================================
-// SPAWN INITIAL ASTEROIDS
-// =========================================
-for (let i = 0; i < 6; i++) asteroids.push(new Asteroid(false));
-setInterval(() => {
-  if (asteroids.filter(a => a.alive).length < 8) asteroids.push(new Asteroid(true));
-}, 2800);
-
-// =========================================
-// CLICK TO SHOOT / DIRECT ASTEROID HIT
+// ARCADE SHOOTING (document-level click)
 // =========================================
 let canShoot = true;
 let arcadeActive = false;
 document.addEventListener('click', e => {
   if (e.target.closest('button, a, input, textarea, label')) return;
-
   // ARCADE MODE: fire bullet toward click position
   if (arcadeActive && arcState === 'playing' && arcShip) {
     const angle = Math.atan2(e.clientY - arcShip.y, e.clientX - arcShip.x);
     arcBullets.push(new ArcBullet(angle));
-    return;
-  }
-
-  if (!canShoot || arcadeActive) return;
-  if (!hintHidden) {
-    document.getElementById('shoot-hint').classList.add('hidden');
-    hintHidden = true;
-  }
-  // Direct hit: clicking ON an asteroid destroys it immediately
-  const clicked = asteroids.find(a => {
-    if (!a.alive) return false;
-    const dx = e.clientX - a.x, dy = e.clientY - a.y;
-    return Math.sqrt(dx * dx + dy * dy) < a.size * 1.3;
-  });
-  if (clicked) {
-    clicked.alive = false;
-    explosions.push(new Explosion(clicked.x, clicked.y));
-    score++;
-    document.getElementById('score').textContent = score;
-    showIntel(INTEL_FACTS[factIndex++ % INTEL_FACTS.length]);
-    setTimeout(() => { clicked.spawn(true); clicked.alive = true; }, 1800);
-  } else {
-    bullets.push(new Bullet(e.clientX, e.clientY));
   }
 });
 
 // =========================================
-// MAIN LOOP
+// MAIN LOOP — cinematic starfield only
 // =========================================
 function loop() {
   ctx.clearRect(0, 0, W, H);
-
-  drawNebulae();
   updateStars();
   drawStars();
-
-  // Bullets + collision
-  bullets = bullets.filter(b => b.alive);
-  bullets.forEach(b => {
-    b.update();
-    b.draw();
-    asteroids.forEach(a => {
-      if (!a.alive || !b.alive) return;
-      if (a.hit(b.x, b.y)) {
-        a.alive = b.alive = false;
-        explosions.push(new Explosion(a.x, a.y));
-        score++;
-        document.getElementById('score').textContent = score;
-        showIntel(INTEL_FACTS[factIndex++ % INTEL_FACTS.length]);
-        setTimeout(() => { a.spawn(true); a.alive = true; }, 1800);
-      }
-    });
-  });
-
-  // Asteroids
-  asteroids.forEach(a => { if (a.alive) { a.update(); a.draw(); } });
-
-  // Explosions
-  explosions.forEach(e => e.update());
-  explosions = explosions.filter(e => e.life > 0);
-  explosions.forEach(e => e.draw());
-
   requestAnimationFrame(loop);
 }
 

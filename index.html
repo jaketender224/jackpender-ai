@@ -7,23 +7,14 @@
   <meta name="description" content="Account Executive at Clerk Chat. Closing deals in the final frontier." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=9" />
-  <link rel="stylesheet" href="style.css?v=9" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=10" />
+  <link rel="stylesheet" href="style.css?v=10" />
 </head>
 <body>
 
-  <!-- BACKGROUND CANVAS (stars + asteroids + bullets) -->
+  <!-- BACKGROUND CANVAS (starfield) -->
   <canvas id="space-canvas"></canvas>
-
-  <!-- HUD -->
-  <div id="hud">
-    <span id="hud-left">JACKPENDER.AI</span>
-    <span id="hud-right">INTEL RECOVERED: <span id="score">0</span></span>
-  </div>
-
-  <!-- SHOOT HINT (fades after first shot) -->
-  <div id="shoot-hint">[ CLICK ON ASTEROIDS TO DESTROY THEM · UNLOCK INTEL ]</div>
 
   <!-- WARP FLASH OVERLAY -->
   <div id="warp-overlay"></div>
@@ -68,21 +59,13 @@
     <button id="fact-popup-close">✕</button>
   </div>
 
-  <!-- INTEL POPUP (shows asteroid facts) -->
-  <div id="intel-popup">
-    <div id="intel-header">⚡ INTEL RECOVERED</div>
-    <div id="intel-text"></div>
-    <button id="intel-popup-close">✕</button>
-  </div>
-
   <!-- ===================== -->
   <!--   HOME SCREEN         -->
   <!-- ===================== -->
   <div id="screen-home" class="screen active">
     <div class="home-scroll">
     <div class="home-inner">
-      <p class="pre-title">[ INCOMING TRANSMISSION ]</p>
-      <h1 class="main-title">JACK<br>PENDER</h1>
+      <h1 class="main-title">Jack Pender</h1>
       <p class="main-sub">Closing deals in the final frontier.</p>
       <p class="main-desc">
         Account Executive · San Francisco ·
@@ -132,7 +115,7 @@
     <!-- BELOW THE FOLD — daily quote -->
     <div class="home-below">
       <div class="home-quote-wrap">
-        <div class="home-quote-label">[ TRANSMISSION OF THE DAY ]</div>
+        <div class="home-quote-label">Transmission of the Day</div>
         <blockquote id="daily-quote-text" class="daily-quote"></blockquote>
         <cite id="daily-quote-attr" class="daily-quote-attr"></cite>
       </div>
@@ -148,7 +131,7 @@
     <div class="section-scroll">
       <div class="section-content">
 
-        <button class="back-btn" data-target="home">◄ RETURN TO GALAXY</button>
+        <button class="back-btn" data-target="home">← Back</button>
         <h2 class="section-title" style="--glow:#7C3AED">PILOT</h2>
 
         <blockquote class="big-quote" style="--accent:#7C3AED">
@@ -202,7 +185,7 @@
     <div class="section-scroll">
       <div class="section-content">
 
-        <button class="back-btn" data-target="home">◄ RETURN TO GALAXY</button>
+        <button class="back-btn" data-target="home">← Back</button>
         <h2 class="section-title" style="--glow:#2563EB">MISSION LOG</h2>
 
         <div class="timeline" style="--line:#2563EB; --dot:#2563EB">
@@ -274,7 +257,7 @@
     <div class="section-scroll">
       <div class="section-content">
 
-        <button class="back-btn" data-target="home">◄ RETURN TO GALAXY</button>
+        <button class="back-btn" data-target="home">← Back</button>
         <h2 class="section-title" style="--glow:#06B6D4">TRANSMISSIONS</h2>
         <p class="section-intro">Updates, ideas, and signals from the field.</p>
 
@@ -311,7 +294,7 @@
     <div class="section-scroll">
       <div class="section-content">
 
-        <button class="back-btn" data-target="home">◄ RETURN TO GALAXY</button>
+        <button class="back-btn" data-target="home">← Back</button>
         <h2 class="section-title" style="--glow:#F59E0B">ARCHIVE</h2>
         <p class="section-intro">Things worth remembering.</p>
 
@@ -363,7 +346,7 @@
     <div class="section-scroll">
       <div class="section-content">
 
-        <button class="back-btn" data-target="home">◄ RETURN TO GALAXY</button>
+        <button class="back-btn" data-target="home">← Back</button>
         <h2 class="section-title" style="--glow:#EC4899">MAKE CONTACT</h2>
 
         <p class="contact-intro">Whether you want to talk sales, AI, startups, or just compare In-N-Out orders — I'm easy to reach and I actually respond.</p>
@@ -432,7 +415,7 @@
     <!-- Start overlay -->
     <div id="arcade-start-overlay" class="arcade-overlay">
       <div class="arcade-overlay-inner">
-        <button class="back-btn" data-target="home">◄ RETURN TO GALAXY</button>
+        <button class="back-btn" data-target="home">← Back</button>
         <h2 class="section-title" style="--glow:#39FF14">ARCADE</h2>
         <p class="arcade-desc">MISSION: SURVIVE 30 SECONDS</p>
         <p class="arcade-desc" style="opacity:0.7">Asteroids inbound from all sides.<br>WASD or arrow keys to move. Click or space to fire.<br>5 lives. 30 seconds. Don't get hit.</p>
@@ -457,7 +440,7 @@
         <h2 class="section-title" style="--glow:#FF2D78">MISSION FAILED</h2>
         <p class="arcade-desc">Direct hit. Ship destroyed.</p>
         <button id="arcade-retry-btn" class="arcade-start-btn">▶ RETRY MISSION</button>
-        <button class="back-btn" data-target="home" style="margin-bottom:0">◄ RETURN TO GALAXY</button>
+        <button class="back-btn" data-target="home" style="margin-bottom:0">← Back</button>
       </div>
     </div>
   </div>
@@ -474,6 +457,6 @@
     <a href="https://calendly.com" target="_blank" rel="noopener" class="gfooter-link">Book a call ↗</a>
   </div>
 
-  <script src="script.js?v=9"></script>
+  <script src="script.js?v=10"></script>
 </body>
 </html>
