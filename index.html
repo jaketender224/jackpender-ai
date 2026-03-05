@@ -9,9 +9,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=10" />
-  <link rel="stylesheet" href="style.css?v=10" />
+  <link rel="stylesheet" href="style.css?v=11" />
 </head>
 <body>
+
+  <!-- CUSTOM CURSOR -->
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
 
   <!-- BACKGROUND CANVAS (starfield) -->
   <canvas id="space-canvas"></canvas>
@@ -65,14 +69,14 @@
   <div id="screen-home" class="screen active">
     <div class="home-scroll">
     <div class="home-inner">
-      <h1 class="main-title">Jack Pender</h1>
-      <p class="main-sub">Closing deals in the final frontier.</p>
-      <p class="main-desc">
+      <h1 class="main-title reveal">Jack Pender</h1>
+      <p class="main-sub reveal">Closing deals in the final frontier.</p>
+      <p class="main-desc reveal">
         Account Executive · San Francisco ·
         <a href="https://clerk.chat" target="_blank" rel="noopener">@ClerkChat</a>
       </p>
 
-      <nav class="planet-nav">
+      <nav class="planet-nav reveal">
 
         <button class="planet-btn" data-target="pilot" style="--glow:#7C3AED; --glow-rgb:124,58,237">
           <div class="planet-orb"></div>
@@ -132,34 +136,34 @@
       <div class="section-content">
 
         <button class="back-btn" data-target="home">← Back</button>
-        <h2 class="section-title" style="--glow:#7C3AED">PILOT</h2>
+        <h2 class="section-title reveal" style="--glow:#7C3AED">PILOT</h2>
 
-        <blockquote class="big-quote" style="--accent:#7C3AED">
+        <blockquote class="big-quote reveal" style="--accent:#7C3AED">
           "I close deals. I make it interesting.<br>I don't wear a tie."
         </blockquote>
 
-        <p>Hey — I'm Jack. Account Executive at <a href="https://clerk.chat" target="_blank" rel="noopener">Clerk Chat</a> in San Francisco, where I sell AI-powered voice and messaging to companies that want to actually reach the people they're trying to reach.</p>
+        <p class="reveal">Hey — I'm Jack. Account Executive at <a href="https://clerk.chat" target="_blank" rel="noopener">Clerk Chat</a> in San Francisco, where I sell AI-powered voice and messaging to companies that want to actually reach the people they're trying to reach.</p>
 
-        <p>I grew up competitive, ended up in sales, and turns out those things go well together. I like the puzzle of a deal — the moment where someone goes from skeptical to excited, and knowing you built that.</p>
+        <p class="reveal">I grew up competitive, ended up in sales, and turns out those things go well together. I like the puzzle of a deal — the moment where someone goes from skeptical to excited, and knowing you built that.</p>
 
-        <p>I went from SDR to closing seven-figure pipelines in under two years at an early-stage startup. I figured out what worked by doing it, not by reading about it.</p>
+        <p class="reveal">I went from SDR to closing seven-figure pipelines in under two years at an early-stage startup. I figured out what worked by doing it, not by reading about it.</p>
 
-        <p>But I'm also the guy who showed up in an In-N-Out hat and got roasted by my VP. Take that however you want.</p>
+        <p class="reveal">But I'm also the guy who showed up in an In-N-Out hat and got roasted by my VP. Take that however you want.</p>
 
         <div class="stats-grid">
-          <div class="stat" style="--accent:#7C3AED" data-fact="Fun fact: The word 'quota' comes from the Latin 'quota pars' — meaning 'how large a part.' Philosophers used it to divide the cosmos. Sales managers use it to divide Q4.">
+          <div class="stat reveal" style="--accent:#7C3AED" data-fact="Fun fact: The word 'quota' comes from the Latin 'quota pars' — meaning 'how large a part.' Philosophers used it to divide the cosmos. Sales managers use it to divide Q4.">
             <span class="stat-num">$1.3M</span>
             <span class="stat-label">ARR Closed</span>
           </div>
-          <div class="stat" style="--accent:#7C3AED" data-fact="Fun fact: 210% of quota puts you in the top 1% of sales reps nationally. The other 99% have strong opinions about the CRM being the problem.">
+          <div class="stat reveal" style="--accent:#7C3AED" data-fact="Fun fact: 210% of quota puts you in the top 1% of sales reps nationally. The other 99% have strong opinions about the CRM being the problem.">
             <span class="stat-num">210%</span>
             <span class="stat-label">Quota Q4 2025</span>
           </div>
-          <div class="stat" style="--accent:#7C3AED" data-fact="Fun fact: The average B2B sales win rate is 47%. An 80% win rate means something unusual is happening — either in the product, the process, or the person. Usually all three.">
+          <div class="stat reveal" style="--accent:#7C3AED" data-fact="Fun fact: The average B2B sales win rate is 47%. An 80% win rate means something unusual is happening — either in the product, the process, or the person. Usually all three.">
             <span class="stat-num">80%</span>
             <span class="stat-label">Win Rate</span>
           </div>
-          <div class="stat" style="--accent:#7C3AED" data-fact="Fun fact: The largest deal ever closed by a 23-year-old in recorded sales history is not a verified statistic. But it's a good sentence to end a bio with.">
+          <div class="stat reveal" style="--accent:#7C3AED" data-fact="Fun fact: The largest deal ever closed by a 23-year-old in recorded sales history is not a verified statistic. But it's a good sentence to end a bio with.">
             <span class="stat-num">#1</span>
             <span class="stat-label">Largest Deals in Co. History</span>
           </div>
@@ -186,11 +190,11 @@
       <div class="section-content">
 
         <button class="back-btn" data-target="home">← Back</button>
-        <h2 class="section-title" style="--glow:#2563EB">MISSION LOG</h2>
+        <h2 class="section-title reveal" style="--glow:#2563EB">MISSION LOG</h2>
 
         <div class="timeline" style="--line:#2563EB; --dot:#2563EB">
 
-          <div class="timeline-item" data-fact="Fun fact: 'Mid-Market' is the part of the market where deals are big enough to need legal review but small enough that no one has heard of the company at dinner parties. It is the most interesting part.">
+          <div class="timeline-item reveal" data-fact="Fun fact: 'Mid-Market' is the part of the market where deals are big enough to need legal review but small enough that no one has heard of the company at dinner parties. It is the most interesting part.">
             <div class="tl-dot"></div>
             <div class="tl-body">
               <h3>Account Executive, Mid-Market · Clerk Chat</h3>
@@ -199,7 +203,7 @@
             </div>
           </div>
 
-          <div class="timeline-item" data-fact="Fun fact: SMB stands for Small and Medium Business. No one has ever agreed on exactly where 'small' ends and 'medium' begins. This ambiguity has sustained entire sales conferences.">
+          <div class="timeline-item reveal" data-fact="Fun fact: SMB stands for Small and Medium Business. No one has ever agreed on exactly where 'small' ends and 'medium' begins. This ambiguity has sustained entire sales conferences.">
             <div class="tl-dot"></div>
             <div class="tl-body">
               <h3>Account Executive, SMB · Clerk Chat</h3>
@@ -208,7 +212,7 @@
             </div>
           </div>
 
-          <div class="timeline-item" data-fact="Fun fact: SDR stands for Sales Development Representative. It was invented so companies could have someone make all the cold calls without having to call them 'the person who makes all the cold calls.'">
+          <div class="timeline-item reveal" data-fact="Fun fact: SDR stands for Sales Development Representative. It was invented so companies could have someone make all the cold calls without having to call them 'the person who makes all the cold calls.'">
             <div class="tl-dot"></div>
             <div class="tl-body">
               <h3>Sales Development Rep · Clerk Chat</h3>
@@ -217,7 +221,7 @@
             </div>
           </div>
 
-          <div class="timeline-item" data-fact="Fun fact: Polar Beverages was founded in 1882 — sixteen years before Pepsi. They have been bubbling quietly in Worcester while everyone else fought the cola wars. The bear on their cans has seen things.">
+          <div class="timeline-item reveal" data-fact="Fun fact: Polar Beverages was founded in 1882 — sixteen years before Pepsi. They have been bubbling quietly in Worcester while everyone else fought the cola wars. The bear on their cans has seen things.">
             <div class="tl-dot"></div>
             <div class="tl-body">
               <h3>Marketing Intern · Polar Beverages</h3>
@@ -226,7 +230,7 @@
             </div>
           </div>
 
-          <div class="timeline-item" data-fact="Fun fact: Salem State has been educating people since 1854. The Viking mascot was chosen in 1937. Norse warriors actually reached Massachusetts around 1000 AD — roughly 600 years before the Puritans, and somehow got less press coverage.">
+          <div class="timeline-item reveal" data-fact="Fun fact: Salem State has been educating people since 1854. The Viking mascot was chosen in 1937. Norse warriors actually reached Massachusetts around 1000 AD — roughly 600 years before the Puritans, and somehow got less press coverage.">
             <div class="tl-dot"></div>
             <div class="tl-body">
               <h3>Salem State University</h3>
@@ -258,13 +262,13 @@
       <div class="section-content">
 
         <button class="back-btn" data-target="home">← Back</button>
-        <h2 class="section-title" style="--glow:#06B6D4">TRANSMISSIONS</h2>
-        <p class="section-intro">Updates, ideas, and signals from the field.</p>
+        <h2 class="section-title reveal" style="--glow:#06B6D4">TRANSMISSIONS</h2>
+        <p class="section-intro reveal">Updates, ideas, and signals from the field.</p>
 
         <div id="transmissions-feed">
           <!-- Add new posts here — copy one .tx-card block and paste above the others -->
 
-          <div class="tx-card">
+          <div class="tx-card reveal">
             <div class="tx-meta">
               <span class="tx-date">FEB 2026</span>
               <span class="tx-tag">TRANSMISSION 001</span>
@@ -295,30 +299,30 @@
       <div class="section-content">
 
         <button class="back-btn" data-target="home">← Back</button>
-        <h2 class="section-title" style="--glow:#F59E0B">ARCHIVE</h2>
-        <p class="section-intro">Things worth remembering.</p>
+        <h2 class="section-title reveal" style="--glow:#F59E0B">ARCHIVE</h2>
+        <p class="section-intro reveal">Things worth remembering.</p>
 
         <div class="archive-grid">
 
-          <div class="archive-card" style="--accent:#F59E0B" data-fact="Fun fact: B2B sales cycles average 102 days. The fastest ones close in days. The difference is almost never the product — it's how fast you figure out who's actually buying.">
+          <div class="archive-card reveal" style="--accent:#F59E0B" data-fact="Fun fact: B2B sales cycles average 102 days. The fastest ones close in days. The difference is almost never the product — it's how fast you figure out who's actually buying.">
             <h3>Clerk Chat Outbound Motion</h3>
             <span class="archive-tag">Built From Scratch · 2024</span>
             <p>Built Clerk Chat's early outbound process as a 22-year-old SDR with no template to follow. Developed messaging, sequencing, and ICP targeting that became the foundation of the GTM motion.</p>
           </div>
 
-          <div class="archive-card" style="--accent:#F59E0B" data-fact="Fun fact: The word 'pitch' in business comes from 19th-century market vendors who would literally pitch (set up) tents to hawk their goods. The metaphor got cleaner. The anxiety stayed exactly the same.">
+          <div class="archive-card reveal" style="--accent:#F59E0B" data-fact="Fun fact: The word 'pitch' in business comes from 19th-century market vendors who would literally pitch (set up) tents to hawk their goods. The metaphor got cleaner. The anxiety stayed exactly the same.">
             <h3>Viking Business Pitch Competition</h3>
             <span class="archive-tag">1st Place · 2023</span>
             <p>Won Salem State's annual pitch competition. Also helped lead the marketing and sales campaign for the following year's competition.</p>
           </div>
 
-          <div class="archive-card" style="--accent:#F59E0B" data-fact="Fun fact: Polar Beverages' polar bear mascot has been on their cans since 1882. He has witnessed the Spanish flu, two world wars, disco, the rise of hard seltzer, and every summer heatwave. He remains unbothered.">
+          <div class="archive-card reveal" style="--accent:#F59E0B" data-fact="Fun fact: Polar Beverages' polar bear mascot has been on their cans since 1882. He has witnessed the Spanish flu, two world wars, disco, the rise of hard seltzer, and every summer heatwave. He remains unbothered.">
             <h3>Polar Beverages</h3>
             <span class="archive-tag">Marketing · 2023</span>
             <p>First real taste of brand marketing — working directly with the Director on operations, campaigns, and day-to-day execution.</p>
           </div>
 
-          <div class="archive-card" style="--accent:#F59E0B" data-fact="Fun fact: Formal peer mentoring was pioneered as a concept in 1987. Before that it was just called 'asking your friend what to do,' which was considered equally effective and significantly cheaper.">
+          <div class="archive-card reveal" style="--accent:#F59E0B" data-fact="Fun fact: Formal peer mentoring was pioneered as a concept in 1987. Before that it was just called 'asking your friend what to do,' which was considered equally effective and significantly cheaper.">
             <h3>Salem State Peer Mentorship</h3>
             <span class="archive-tag">Mentor · 2023–2024</span>
             <p>Mentored incoming students through their first year. Turns out giving advice is something I don't hate.</p>
@@ -347,11 +351,11 @@
       <div class="section-content">
 
         <button class="back-btn" data-target="home">← Back</button>
-        <h2 class="section-title" style="--glow:#EC4899">MAKE CONTACT</h2>
+        <h2 class="section-title reveal" style="--glow:#EC4899">MAKE CONTACT</h2>
 
-        <p class="contact-intro">Whether you want to talk sales, AI, startups, or just compare In-N-Out orders — I'm easy to reach and I actually respond.</p>
+        <p class="contact-intro reveal">Whether you want to talk sales, AI, startups, or just compare In-N-Out orders — I'm easy to reach and I actually respond.</p>
 
-        <div class="contact-quick-links">
+        <div class="contact-quick-links reveal">
           <a href="https://www.linkedin.com/in/jack-pender-3a1b80247/" target="_blank" rel="noopener" class="contact-pill">LinkedIn ↗</a>
           <a href="mailto:jack@jackpender.ai" class="contact-pill">jack@jackpender.ai</a>
           <!-- Replace the href below with your Calendly link once you set it up -->
@@ -359,7 +363,7 @@
         </div>
 
         <!-- SHOOTING STAR CONTACT -->
-        <div class="wish-zone">
+        <div class="wish-zone reveal">
           <p class="wish-label">Or — send a signal into the void.</p>
           <button id="launch-signal-btn" class="launch-btn">★ LAUNCH A SIGNAL ★</button>
         </div>
@@ -457,6 +461,6 @@
     <a href="https://calendly.com" target="_blank" rel="noopener" class="gfooter-link">Book a call ↗</a>
   </div>
 
-  <script src="script.js?v=10"></script>
+  <script src="script.js?v=11"></script>
 </body>
 </html>

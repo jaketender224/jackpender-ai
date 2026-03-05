@@ -1262,3 +1262,71 @@ a.arcade-discount-link:hover {
   .contact-quick-links { flex-direction: column; }
   .home-quote-wrap { padding: 24px 0; }
 }
+
+/* =========================================
+   PHASE 2 — CUSTOM CURSOR
+   ========================================= */
+html.custom-cursor,
+html.custom-cursor * {
+  cursor: none !important;
+}
+
+#cursor-dot {
+  position: fixed;
+  top: -2.5px;
+  left: -2.5px;
+  width: 5px;
+  height: 5px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  will-change: transform;
+  opacity: 0;
+  transition: background 0.15s ease, box-shadow 0.15s ease, opacity 0.3s ease;
+}
+
+#cursor-ring {
+  position: fixed;
+  top: -15px;
+  left: -15px;
+  width: 30px;
+  height: 30px;
+  border: 1.5px solid rgba(255,255,255,0.28);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  will-change: transform;
+  opacity: 0;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease;
+}
+
+html.custom-cursor body.cursor-hover #cursor-dot {
+  background: var(--accent);
+  box-shadow: 0 0 10px rgba(74,158,255,0.8), 0 0 3px rgba(74,158,255,0.5);
+}
+
+html.custom-cursor body.cursor-hover #cursor-ring {
+  border-color: rgba(74,158,255,0.45);
+  box-shadow: 0 0 10px rgba(74,158,255,0.12);
+}
+
+/* Hide on touch/coarse pointer devices */
+@media (pointer: coarse) {
+  #cursor-dot, #cursor-ring { display: none; }
+}
+
+/* =========================================
+   PHASE 2 — SECTION + HOME REVEAL
+   ========================================= */
+
+/* Elements start invisible — revealed by JS */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}

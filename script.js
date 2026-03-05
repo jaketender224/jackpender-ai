@@ -1,6 +1,6 @@
 /* =========================================
    JACK PENDER · jackpender.ai
-   script.js — neon arcade space engine
+   script.js — cinematic deep space v11
    ========================================= */
 
 // =========================================
@@ -20,6 +20,89 @@ window.addEventListener('resize', () => {
   canvas.width  = W;
   canvas.height = H;
 });
+
+// =========================================
+// CUSTOM CURSOR
+// =========================================
+(function initCursor() {
+  // Skip on touch/coarse-pointer devices
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+
+  const dot  = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+  if (!dot || !ring) return;
+
+  document.documentElement.classList.add('custom-cursor');
+
+  let dotX  = window.innerWidth  / 2;
+  let dotY  = window.innerHeight / 2;
+  let ringX = dotX, ringY = dotY;
+  let visible = false;
+
+  document.addEventListener('mousemove', e => {
+    dotX = e.clientX;
+    dotY = e.clientY;
+    if (!visible) {
+      visible = true;
+      dot.style.opacity  = '1';
+      ring.style.opacity = '1';
+    }
+  });
+
+  document.addEventListener('mouseleave', () => {
+    dot.style.opacity  = '0';
+    ring.style.opacity = '0';
+  });
+  document.addEventListener('mouseenter', () => {
+    if (visible) {
+      dot.style.opacity  = '1';
+      ring.style.opacity = '1';
+    }
+  });
+
+  // Hover state — light up on interactive elements
+  document.addEventListener('mouseover', e => {
+    if (e.target.closest('a, button, input, textarea, label, select, [role="button"]')) {
+      document.body.classList.add('cursor-hover');
+    }
+  });
+  document.addEventListener('mouseout', e => {
+    if (e.target.closest('a, button, input, textarea, label, select, [role="button"]')) {
+      document.body.classList.remove('cursor-hover');
+    }
+  });
+
+  function animCursor() {
+    // Dot snaps immediately
+    dot.style.transform = `translate(${dotX}px, ${dotY}px)`;
+    // Ring lerps behind
+    ringX += (dotX - ringX) * 0.12;
+    ringY += (dotY - ringY) * 0.12;
+    ring.style.transform = `translate(${ringX}px, ${ringY}px)`;
+    requestAnimationFrame(animCursor);
+  }
+  animCursor();
+})();
+
+// =========================================
+// SECTION REVEAL
+// =========================================
+function triggerSectionReveal(screenEl) {
+  if (!screenEl) return;
+  const reveals = Array.from(screenEl.querySelectorAll('.reveal'));
+  // Reset first
+  reveals.forEach(el => {
+    el.classList.remove('revealed');
+    el.style.transitionDelay = '';
+  });
+  // Stagger in on next frame
+  requestAnimationFrame(() => {
+    reveals.forEach((el, i) => {
+      el.style.transitionDelay = (i * 55) + 'ms';
+      el.classList.add('revealed');
+    });
+  });
+}
 
 // =========================================
 // STARS
@@ -250,6 +333,8 @@ function navigateTo(target, pushHistory) {
         const hs = next.querySelector('.home-scroll');
         if (hs) hs.scrollTop = 0;
       }
+      // Staggered reveal for the incoming section
+      triggerSectionReveal(next);
     }
     overlay.style.opacity    = '0';
     overlay.style.transition = 'opacity 0.3s ease';
@@ -281,6 +366,9 @@ document.querySelectorAll('.planet-btn').forEach(b => b.addEventListener('click'
 document.querySelectorAll('.back-btn').forEach(b => b.addEventListener('click', () => navigateTo(b.dataset.target)));
 document.querySelectorAll('.mnav-btn').forEach(b => b.addEventListener('click', () => navigateTo(b.dataset.target)));
 document.addEventListener('keydown', e => { if (e.key === 'Escape') navigateTo('home'); });
+
+// Trigger reveal on the initially active screen (handles direct URL hash + default home)
+triggerSectionReveal(document.querySelector('.screen.active'));
 
 // Fade scroll hint when user scrolls the home screen
 const homeScroll = document.querySelector('.home-scroll');
