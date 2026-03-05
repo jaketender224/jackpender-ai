@@ -449,8 +449,9 @@ function loop() {
   asteroids.forEach(a => { if (a.alive) { a.update(); a.draw(); } });
 
   // Explosions
+  explosions.forEach(e => e.update());
   explosions = explosions.filter(e => e.life > 0);
-  explosions.forEach(e => { e.update(); e.draw(); });
+  explosions.forEach(e => e.draw());
 
   requestAnimationFrame(loop);
 }
@@ -959,8 +960,9 @@ function arcGameLoop() {
   }
 
   // Explosions
+  arcExplosions.forEach(e => e.update());
   arcExplosions = arcExplosions.filter(e => e.life > 0);
-  arcExplosions.forEach(e => { e.update(); e.draw(); });
+  arcExplosions.forEach(e => e.draw());
 
   // Draw ship
   arcDrawShip();
