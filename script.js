@@ -327,6 +327,29 @@ function updateMiniNav(target) {
   });
 }
 
+// Clean URL slugs for each section
+const SLUGS = {
+  home:          '/',
+  pilot:         '/pilot',
+  'mission-log': '/mission-log',
+  transmissions: '/transmissions',
+  archive:       '/archive',
+  'make-contact':'/contact',
+  arcade:        '/arcade',
+};
+const SLUG_TO_TARGET = {};
+Object.entries(SLUGS).forEach(([k, v]) => { SLUG_TO_TARGET[v] = k; });
+
+const PAGE_TITLES = {
+  home:          'Jack Pender — Account Executive',
+  pilot:         'About — Jack Pender',
+  'mission-log': 'Mission Log — Jack Pender',
+  transmissions: 'Transmissions — Jack Pender',
+  archive:       'Archive — Jack Pender',
+  'make-contact':'Contact — Jack Pender',
+  arcade:        'Arcade — Jack Pender',
+};
+
 function navigateTo(target, pushHistory) {
   const current = document.querySelector('.screen.active');
   if (!current) return;
@@ -336,9 +359,12 @@ function navigateTo(target, pushHistory) {
   canShoot   = false;
   warpActive = true;
 
-  // Push browser history so back button works between sections
+  // Push clean path URL and update page title
   if (pushHistory !== false) {
-    history.pushState({ section: target }, '', '#' + target);
+    const slug  = SLUGS[target] || '/' + target;
+    const title = PAGE_TITLES[target] || PAGE_TITLES.home;
+    history.pushState({ section: target }, title, slug);
+    document.title = title;
   }
 
   setTimeout(() => {
@@ -371,20 +397,29 @@ function navigateTo(target, pushHistory) {
 
 // Browser back/forward button support
 window.addEventListener('popstate', e => {
-  const target = (e.state && e.state.section) || 'home';
+  const target = (e.state && e.state.section) || SLUG_TO_TARGET[location.pathname] || 'home';
+  document.title = PAGE_TITLES[target] || PAGE_TITLES.home;
   navigateTo(target, false);
 });
 
-// Load correct section if URL has a hash (e.g. #pilot)
-if (location.hash) {
-  const target = location.hash.slice(1);
-  if (document.getElementById('screen-' + target)) {
+// Load correct section if URL has a path (e.g. /pilot) or legacy hash (e.g. #pilot)
+(function () {
+  const path   = location.pathname;
+  const legacy = location.hash ? location.hash.slice(1) : null;
+  const target = SLUG_TO_TARGET[path] || (legacy && document.getElementById('screen-' + legacy) ? legacy : null);
+  if (target && target !== 'home') {
     document.getElementById('screen-home').classList.remove('active');
-    document.getElementById('screen-' + target).classList.add('active');
-    updateMiniNav(target);
-    arcadeActive = (target === 'arcade');
+    const el = document.getElementById('screen-' + target);
+    if (el) {
+      el.classList.add('active');
+      updateMiniNav(target);
+      arcadeActive = (target === 'arcade');
+      document.title = PAGE_TITLES[target] || PAGE_TITLES.home;
+      // Upgrade legacy hash URL to clean path silently
+      if (legacy) history.replaceState({ section: target }, document.title, SLUGS[target] || '/' + target);
+    }
   }
-}
+})();
 
 // Wire up all nav buttons
 document.querySelectorAll('.planet-btn').forEach(b => b.addEventListener('click', () => navigateTo(b.dataset.target)));
