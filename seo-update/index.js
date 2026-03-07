@@ -1,7 +1,7 @@
 /**
  * jackpender.ai — Weekly SEO + GEO Updater
  *
- * 1. Searches the web for current SEO/GEO best practices via Tavily
+ * 1. Searches the web for current SEO/GEO best practices via Exa (neural/semantic search)
  * 2. Analyses jackpender.ai's <head> with Claude
  * 3. Proposes conservative HEAD-only changes (meta tags, JSON-LD, title)
  * 4. Commits changes to a seo/weekly-YYYY-MM-DD branch + opens a GitHub PR
@@ -9,7 +9,7 @@
  *
  * REQUIRED ENV VARS:
  *   ANTHROPIC_API_KEY
- *   TAVILY_API_KEY
+ *   EXA_API_KEY
  *   RESEND_API_KEY
  *   GH_TOKEN            (GitHub token with contents+pull-requests write)
  *
@@ -36,19 +36,22 @@ const EMAIL_FROM = process.env.RESEND_FROM || 'SEO Update <onboarding@resend.dev
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-async function tavilySearch(query) {
-  const res = await fetch('https://api.tavily.com/search', {
+async function exaSearch(query) {
+  const res = await fetch('https://api.exa.ai/search', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': process.env.EXA_API_KEY,
+    },
     body: JSON.stringify({
-      api_key: process.env.TAVILY_API_KEY,
       query,
-      search_depth: 'basic',
-      max_results: 4,
-      include_answer: true,
+      num_results: 4,
+      use_autoprompt: true, // Exa rewrites queries for better semantic matching
+      type: 'neural',       // semantic understanding, not keyword matching
+      text: true,           // include full text snippets in results
     }),
   });
-  if (!res.ok) throw new Error(`Tavily ${res.status}: ${await res.text()}`);
+  if (!res.ok) throw new Error(`Exa ${res.status}: ${await res.text()}`);
   return res.json();
 }
 
@@ -71,14 +74,14 @@ async function main() {
     'ChatGPT Perplexity answer engine optimization personal brand visibility 2026',
   ];
 
-  const results = await Promise.allSettled(queries.map(tavilySearch));
+  const results = await Promise.allSettled(queries.map(exaSearch));
   const searchText = results.map((r, i) => {
     if (r.status === 'rejected') return `Query: ${queries[i]}\n[Search failed: ${r.reason}]`;
     const d = r.value;
     const tops = (d.results || []).slice(0, 3)
-      .map(x => `  - ${x.title} (${x.url})\n    ${(x.content || '').slice(0, 200)}`)
+      .map(x => `  - ${x.title} (${x.url})\n    ${(x.text || '').slice(0, 250)}`)
       .join('\n');
-    return `Query: ${queries[i]}\nAI Answer: ${d.answer || 'N/A'}\nTop results:\n${tops}`;
+    return `Query: ${queries[i]}\nTop results:\n${tops}`;
   }).join('\n\n---\n\n');
 
   // Collect URLs found in research for email
