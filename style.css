@@ -1284,16 +1284,6 @@ a.arcade-discount-link:hover {
   .main-title  { font-size: 38px; letter-spacing: -0.02em; }
   .contact-quick-links { flex-direction: column; }
   .home-quote-wrap { padding: 24px 0; }
-  /* Nav-sun on mobile: appears as a full-width row above the planet grid */
-  .nav-sun {
-    width: 100%;
-    order: -1;
-    position: static;
-    transform: none;
-    text-align: center;
-    margin: 0 0 4px;
-    pointer-events: none;
-  }
 }
 
 /* =========================================

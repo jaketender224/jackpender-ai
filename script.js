@@ -921,7 +921,24 @@ function initOrbitNav() {
   let running  = false;
   let lastTs   = null;
 
+  // h1 nav-sun — lives in .home-inner on mobile, inside nav on desktop
+  const homeInner = nav.closest('.home-inner') || nav.parentElement;
+  const sun       = homeInner ? homeInner.querySelector('.nav-sun') : null;
+
   function isMobile() { return window.innerWidth <= 640; }
+
+  // Move the name h1 into nav (desktop sun) or back to home-inner (mobile)
+  function placeSun() {
+    if (!sun) return;
+    if (isMobile()) {
+      if (sun.parentElement !== homeInner) homeInner.insertBefore(sun, nav);
+    } else {
+      if (sun.parentElement !== nav) nav.prepend(sun);
+    }
+  }
+
+  // Position immediately — before any rAF/reveal fires — to avoid layout flash
+  placeSun();
 
   // Hover-pause listeners — set once, not per rebuild
   btns.forEach((btn, i) => {
@@ -930,6 +947,7 @@ function initOrbitNav() {
   });
 
   function buildOrbits() {
+    placeSun();
     if (isMobile()) { stopOrbit(); return; }
     const W = nav.offsetWidth;
     // Preserve live angle + scale on resize so orbit doesn't jump
@@ -972,6 +990,8 @@ function initOrbitNav() {
       btn.style.opacity   = '';
     });
     orbits.forEach(o => { if (o) o.hovering = false; });
+    // Restore h1 to home-inner flow on mobile
+    if (sun && sun.parentElement === nav) homeInner.insertBefore(sun, nav);
   }
 
   function tick(ts) {
