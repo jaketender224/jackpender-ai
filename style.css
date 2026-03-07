@@ -1547,6 +1547,10 @@ html.custom-cursor body.cursor-hover #cursor-ring {
     /* Subtle glow to reinforce the sun metaphor */
     text-shadow: 0 0 60px rgba(74, 158, 255, 0.18), 0 0 120px rgba(74, 158, 255, 0.08);
   }
+  /* Prevent the reveal animation's translateY(0) from overriding the centering transform */
+  .nav-sun.revealed {
+    transform: translate(-50%, -50%);
+  }
 
   /* Buttons positioned absolutely by JS — JS owns transform; opacity transitions for depth */
   .planet-btn {
