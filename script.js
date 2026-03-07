@@ -893,7 +893,7 @@ function arcInit() {
 }
 
 // =========================================
-// ORBITAL PLANET NAV (Phase 8)
+// ORBITAL PLANET NAV (v23 — name-as-sun, hover-pause, spread orbits)
 // =========================================
 function initOrbitNav() {
   const nav  = document.querySelector('.planet-nav');
@@ -903,29 +903,43 @@ function initOrbitNav() {
   const rings = Array.from(nav.querySelectorAll('.orbit-ring'));
   if (!btns.length) return;
 
-  // rFac  = orbit radius as fraction of nav width
-  // speed = radians per ms
+  // rFac  = orbit radius as fraction of nav width (evenly spread — min gap 0.07)
+  // speed = radians per ms (~30% slower than v22)
   // phase = starting angle (radians)
-  // b     = y-compression (makes ellipse flatter — 1 = circle, 0.3 = very flat)
+  // b     = y-compression (ellipse flatness; 1 = circle)
   const PARAMS = [
-    { rFac: 0.135, speed: 0.00030, phase: 0.00,  b: 0.36 }, // PILOT
-    { rFac: 0.195, speed: 0.00022, phase: 1.05,  b: 0.32 }, // MISSION LOG
-    { rFac: 0.108, speed: 0.00038, phase: 2.09,  b: 0.40 }, // TRANSMISSIONS
-    { rFac: 0.238, speed: 0.00017, phase: 3.14,  b: 0.29 }, // ARCHIVE
-    { rFac: 0.163, speed: 0.00026, phase: 4.19,  b: 0.34 }, // MAKE CONTACT
-    { rFac: 0.270, speed: 0.00014, phase: 5.24,  b: 0.27 }, // ARCADE
+    { rFac: 0.11, speed: 0.00021, phase: 0.00,  b: 0.38 }, // PILOT
+    { rFac: 0.19, speed: 0.00015, phase: 1.05,  b: 0.34 }, // MISSION LOG
+    { rFac: 0.27, speed: 0.00027, phase: 2.09,  b: 0.30 }, // TRANSMISSIONS
+    { rFac: 0.33, speed: 0.00012, phase: 3.14,  b: 0.28 }, // ARCHIVE
+    { rFac: 0.39, speed: 0.00018, phase: 4.19,  b: 0.26 }, // MAKE CONTACT
+    { rFac: 0.45, speed: 0.00010, phase: 5.24,  b: 0.24 }, // ARCADE
   ];
 
   let orbits   = [];
   let orbitRaf = null;
   let running  = false;
+  let lastTs   = null;
 
   function isMobile() { return window.innerWidth <= 640; }
+
+  // Hover-pause listeners — set once, not per rebuild
+  btns.forEach((btn, i) => {
+    btn.addEventListener('mouseenter', () => { if (orbits[i]) orbits[i].hovering = true; });
+    btn.addEventListener('mouseleave', () => { if (orbits[i]) orbits[i].hovering = false; });
+  });
 
   function buildOrbits() {
     if (isMobile()) { stopOrbit(); return; }
     const W = nav.offsetWidth;
-    orbits = PARAMS.map(p => ({ ...p, r: W * p.rFac }));
+    // Preserve live angle + scale on resize so orbit doesn't jump
+    orbits = PARAMS.map((p, i) => ({
+      ...p,
+      r:            W * p.rFac,
+      angle:        orbits[i] ? orbits[i].angle        : p.phase,
+      hovering:     orbits[i] ? orbits[i].hovering     : false,
+      currentScale: orbits[i] ? orbits[i].currentScale : 0.72 + 0.32 * 0.5,
+    }));
     rings.forEach((ring, i) => {
       const o = orbits[i]; if (!o) return;
       ring.style.width  = (o.r * 2) + 'px';
@@ -936,6 +950,7 @@ function initOrbitNav() {
 
   function startOrbit() {
     running = true;
+    lastTs  = null;
     btns.forEach(btn => {
       btn.style.position = 'absolute';
       btn.style.left     = '0';
@@ -946,6 +961,7 @@ function initOrbitNav() {
 
   function stopOrbit() {
     running = false;
+    lastTs  = null;
     cancelAnimationFrame(orbitRaf);
     btns.forEach(btn => {
       btn.style.position  = '';
@@ -955,24 +971,42 @@ function initOrbitNav() {
       btn.style.zIndex    = '';
       btn.style.opacity   = '';
     });
+    orbits.forEach(o => { if (o) o.hovering = false; });
   }
 
   function tick(ts) {
     if (!running) return;
+
+    // Delta time — capped to 50ms so tab switches don't cause a jump
+    if (lastTs === null) lastTs = ts;
+    const dt = Math.min(ts - lastTs, 50);
+    lastTs = ts;
+
     const cx = nav.offsetWidth  / 2;
     const cy = nav.offsetHeight / 2;
+
     btns.forEach((btn, i) => {
       const o = orbits[i]; if (!o) return;
-      const angle = o.phase + ts * o.speed;
-      const x     = cx + Math.cos(angle) * o.r;
-      const y     = cy + Math.sin(angle) * o.r * o.b;
-      const depth = Math.sin(angle);        // -1 (back) to +1 (front)
-      const t     = depth * 0.5 + 0.5;     // 0 to 1
-      const scale = 0.72 + 0.32 * t;
-      btn.style.transform = `translate(${x}px,${y}px) translate(-50%,-50%) scale(${scale})`;
-      btn.style.zIndex    = Math.round(10 + depth * 15);
-      btn.style.opacity   = (0.45 + 0.55 * t).toFixed(3);
+
+      // Advance angle only while not paused by hover
+      if (!o.hovering) o.angle += o.speed * dt;
+
+      const angle  = o.angle;
+      const x      = cx + Math.cos(angle) * o.r;
+      const y      = cy + Math.sin(angle) * o.r * o.b;
+      const depth  = Math.sin(angle);       // -1 (back) → +1 (front)
+      const t      = depth * 0.5 + 0.5;    // 0 → 1
+
+      // Smoothly lerp toward target scale (hover = bigger, normal = depth-based)
+      const baseScale   = 0.72 + 0.32 * t;
+      const targetScale = o.hovering ? Math.max(baseScale * 1.20, 1.08) : baseScale;
+      o.currentScale   += (targetScale - o.currentScale) * 0.12;
+
+      btn.style.transform = `translate(${x}px,${y}px) translate(-50%,-50%) scale(${o.currentScale.toFixed(4)})`;
+      btn.style.zIndex    = o.hovering ? '50' : String(Math.round(10 + depth * 15));
+      btn.style.opacity   = o.hovering ? '1' : (0.45 + 0.55 * t).toFixed(3);
     });
+
     orbitRaf = requestAnimationFrame(tick);
   }
 
@@ -983,7 +1017,7 @@ function initOrbitNav() {
 
   document.addEventListener('visibilitychange', () => {
     if (!running) return;
-    if (document.hidden) cancelAnimationFrame(orbitRaf);
+    if (document.hidden) { cancelAnimationFrame(orbitRaf); lastTs = null; }
     else orbitRaf = requestAnimationFrame(tick);
   });
 }
