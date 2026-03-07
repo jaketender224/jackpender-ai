@@ -23,7 +23,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg?v=10" />
-  <link rel="stylesheet" href="style.css?v=13" />
+  <link rel="stylesheet" href="style.css?v=14" />
 </head>
 <body>
 
@@ -122,6 +122,16 @@
           <span>ARCADE</span>
         </button>
 
+        <!-- Orbit rings — sized + animated by JS on desktop only -->
+        <div class="orbit-rings" aria-hidden="true">
+          <div class="orbit-ring"></div>
+          <div class="orbit-ring"></div>
+          <div class="orbit-ring"></div>
+          <div class="orbit-ring"></div>
+          <div class="orbit-ring"></div>
+          <div class="orbit-ring"></div>
+        </div>
+
       </nav>
 
       <!-- Scroll hint arrow -->
@@ -150,6 +160,12 @@
       <div class="section-content">
 
         <button class="back-btn" data-target="home">← Back</button>
+
+        <div class="pilot-photo-wrap reveal">
+          <!-- Drop jack.jpg into the pender-space folder to activate the real photo -->
+          <div class="pilot-photo-placeholder">JP</div>
+        </div>
+
         <h2 class="section-title reveal" style="--glow:#7C3AED">PILOT</h2>
 
         <blockquote class="big-quote reveal" style="--accent:#7C3AED">
@@ -235,7 +251,7 @@
             <div class="tl-body">
               <h3>Sales Development Rep · Clerk Chat</h3>
               <span class="tl-date">May 2024 – Oct 2024</span>
-              <p>Promoted to AE in under 6 months. Owned outbound into healthcare, nonprofit, finance, and tech. Ran Clerk Chat's outbound from the ground up. No template, just results.</p>
+              <p>Promoted to AE in under 6 months. Part of the early team that built out outbound across healthcare, nonprofit, finance, and tech. No playbook handed to us — we figured it out as we went.</p>
             </div>
           </div>
 
@@ -324,8 +340,8 @@
 
           <div class="archive-card reveal" style="--accent:#F59E0B" data-fact="Fun fact: B2B sales cycles average 102 days. The fastest ones close in days. The difference is almost never the product. It's how fast you figure out who's actually buying.">
             <h3>Clerk Chat Outbound Motion</h3>
-            <span class="archive-tag">Built From Scratch · 2024</span>
-            <p>Ran Clerk Chat's first outbound motion as a 22-year-old SDR with no playbook to follow. Helped shape the messaging, sequencing, and ICP targeting that became the foundation of the GTM motion.</p>
+            <span class="archive-tag">Early GTM · 2024</span>
+            <p>Part of the team that stood up Clerk Chat's outbound motion from scratch at 22, with no playbook to reference. Contributed to the messaging, sequencing, and ICP work that eventually became the backbone of the GTM strategy.</p>
           </div>
 
           <div class="archive-card reveal" style="--accent:#F59E0B" data-fact="Fun fact: The word 'pitch' in business comes from 19th-century market vendors who would literally pitch (set up) tents to hawk their goods. The metaphor got cleaner. The anxiety stayed exactly the same.">
@@ -478,6 +494,6 @@
     <a href="https://calendly.com/jack-jackpender/30min" target="_blank" rel="noopener" class="gfooter-link">Book a call ↗</a>
   </div>
 
-  <script src="script.js?v=13"></script>
+  <script src="script.js?v=14"></script>
 </body>
 </html>

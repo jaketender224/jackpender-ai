@@ -1,6 +1,6 @@
 /* =========================================
    JACK PENDER · jackpender.ai
-   script.js — cinematic deep space v13
+   script.js — cinematic deep space v14
    ========================================= */
 
 // =========================================
@@ -891,5 +891,102 @@ function arcInit() {
   if (retryBtn) retryBtn.addEventListener('click', arcStartGame);
   if (againBtn) againBtn.addEventListener('click', arcStartGame);
 }
+
+// =========================================
+// ORBITAL PLANET NAV (Phase 8)
+// =========================================
+function initOrbitNav() {
+  const nav  = document.querySelector('.planet-nav');
+  if (!nav) return;
+
+  const btns  = Array.from(nav.querySelectorAll('.planet-btn'));
+  const rings = Array.from(nav.querySelectorAll('.orbit-ring'));
+  if (!btns.length) return;
+
+  // rFac  = orbit radius as fraction of nav width
+  // speed = radians per ms
+  // phase = starting angle (radians)
+  // b     = y-compression (makes ellipse flatter — 1 = circle, 0.3 = very flat)
+  const PARAMS = [
+    { rFac: 0.135, speed: 0.00030, phase: 0.00,  b: 0.36 }, // PILOT
+    { rFac: 0.195, speed: 0.00022, phase: 1.05,  b: 0.32 }, // MISSION LOG
+    { rFac: 0.108, speed: 0.00038, phase: 2.09,  b: 0.40 }, // TRANSMISSIONS
+    { rFac: 0.238, speed: 0.00017, phase: 3.14,  b: 0.29 }, // ARCHIVE
+    { rFac: 0.163, speed: 0.00026, phase: 4.19,  b: 0.34 }, // MAKE CONTACT
+    { rFac: 0.270, speed: 0.00014, phase: 5.24,  b: 0.27 }, // ARCADE
+  ];
+
+  let orbits   = [];
+  let orbitRaf = null;
+  let running  = false;
+
+  function isMobile() { return window.innerWidth <= 640; }
+
+  function buildOrbits() {
+    if (isMobile()) { stopOrbit(); return; }
+    const W = nav.offsetWidth;
+    orbits = PARAMS.map(p => ({ ...p, r: W * p.rFac }));
+    rings.forEach((ring, i) => {
+      const o = orbits[i]; if (!o) return;
+      ring.style.width  = (o.r * 2) + 'px';
+      ring.style.height = (o.r * o.b * 2) + 'px';
+    });
+    if (!running) startOrbit();
+  }
+
+  function startOrbit() {
+    running = true;
+    btns.forEach(btn => {
+      btn.style.position = 'absolute';
+      btn.style.left     = '0';
+      btn.style.top      = '0';
+    });
+    orbitRaf = requestAnimationFrame(tick);
+  }
+
+  function stopOrbit() {
+    running = false;
+    cancelAnimationFrame(orbitRaf);
+    btns.forEach(btn => {
+      btn.style.position  = '';
+      btn.style.left      = '';
+      btn.style.top       = '';
+      btn.style.transform = '';
+      btn.style.zIndex    = '';
+      btn.style.opacity   = '';
+    });
+  }
+
+  function tick(ts) {
+    if (!running) return;
+    const cx = nav.offsetWidth  / 2;
+    const cy = nav.offsetHeight / 2;
+    btns.forEach((btn, i) => {
+      const o = orbits[i]; if (!o) return;
+      const angle = o.phase + ts * o.speed;
+      const x     = cx + Math.cos(angle) * o.r;
+      const y     = cy + Math.sin(angle) * o.r * o.b;
+      const depth = Math.sin(angle);        // -1 (back) to +1 (front)
+      const t     = depth * 0.5 + 0.5;     // 0 to 1
+      const scale = 0.72 + 0.32 * t;
+      btn.style.transform = `translate(${x}px,${y}px) translate(-50%,-50%) scale(${scale})`;
+      btn.style.zIndex    = Math.round(10 + depth * 15);
+      btn.style.opacity   = (0.45 + 0.55 * t).toFixed(3);
+    });
+    orbitRaf = requestAnimationFrame(tick);
+  }
+
+  buildOrbits();
+
+  const ro = new ResizeObserver(buildOrbits);
+  ro.observe(nav);
+
+  document.addEventListener('visibilitychange', () => {
+    if (!running) return;
+    if (document.hidden) cancelAnimationFrame(orbitRaf);
+    else orbitRaf = requestAnimationFrame(tick);
+  });
+}
+initOrbitNav();
 
 arcInit();
