@@ -1,0 +1,46 @@
+name: Weekly SEO Update
+
+# Sunday 5:00 PM PST = Monday 01:00 UTC
+on:
+  schedule:
+    - cron: '0 1 * * 1'
+  workflow_dispatch: # Manual trigger (for testing — runs immediately on demand)
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  seo-update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Full history needed for branch creation
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: seo-update
+
+      - name: Configure git
+        run: |
+          git config user.name "SEO Bot"
+          git config user.email "action@github.com"
+
+      - name: Run SEO update
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TAVILY_API_KEY:    ${{ secrets.TAVILY_API_KEY }}
+          RESEND_API_KEY:    ${{ secrets.RESEND_API_KEY }}
+          RESEND_FROM:       'SEO Update <onboarding@resend.dev>'
+          SITE_DIR:          '.'
+          GH_TOKEN:          ${{ secrets.GITHUB_TOKEN }}
+        run: node seo-update/index.js
